@@ -1,0 +1,38 @@
+api-tests:
+  image: python:3.5
+  script:
+    - pip install -r requirements.txt
+    - export DJANGO_SETTINGS_MODULE=app.settings.test
+    - python manage.py migrate --no-input
+    - coverage run ./manage.py test
+    - coverage html
+    - coverage report
+  except:
+    - tags
+  stage: test
+  artifacts:
+    paths:
+      - coverage_html_report
+
+deploy on staging:
+  stage: deploy
+  script:
+  - gem install dpl
+  - dpl --provider=heroku --app=agendaodonto-staging --api-key=$HEROKU_KEY
+  except:
+    - tags
+  environment:
+    name: staging
+    url: https://agendaodonto-staging.herokuapp.com/
+
+deploy on production:
+  stage: deploy
+  script:
+  - gem install dpl
+  - dpl --provider=heroku --app=agendaodonto --api-key=$HEROKU_KEY
+  when: manual
+  only:
+    - tags
+  environment:
+    name: production
+    url: https://agendaodonto.herokuapp.com/
