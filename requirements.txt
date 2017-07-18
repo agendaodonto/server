@@ -10,7 +10,7 @@ djangorestframework==3.6.2
 djangorestframework-jwt==1.8.0
 djoser==0.5.4
 gunicorn==19.7.0
-psycopg2==2.7
+psycopg2==2.7.1
 PyJWT==1.4.2
 pytz==2016.10
 requests==2.13.0
