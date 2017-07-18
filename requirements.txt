@@ -13,7 +13,7 @@ gunicorn==19.7.0
 psycopg2==2.7
 PyJWT==1.4.2
 pytz==2016.10
-requests==2.13.0
+requests==2.18.1
 requests-mock==1.1.0
 six==1.10.0
 whitenoise==3.3.0
