@@ -6,7 +6,7 @@ django-crispy-forms==1.6.1
 django-filter==1.0.4
 django-guardian==1.4.6
 django-model-utils==2.6.1
-djangorestframework==3.6.2
+djangorestframework==3.6.3
 djangorestframework-jwt==1.8.0
 djoser==0.5.4
 gunicorn==19.7.0
