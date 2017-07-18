@@ -1,0 +1,15 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+env:
+  - DJANGO_SETTINGS_MODULE=app.settings.test
+script:
+  - coverage run ./manage.py test
+after_success:
+  - coveralls
+dist: trusty
+jobs:
+  include:
+    - stage: test
+      script: echo flake8

@@ -20,3 +20,4 @@ whitenoise==3.3.0
 faker==0.7.17
 celery==4.0.2
 django-celery-results==1.0.1
+coveralls==1.1
