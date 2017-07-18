@@ -1,0 +1,28 @@
+{
+  "name": "Agenda Odonto Server",
+  "description": "Agenda Odonto Backend",
+  "scripts": {
+  },
+  "env": {
+    "CLOUDAMQP_URL": {
+      "required": true
+    },
+    "DJANGO_SETTINGS_MODULE": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+    "cloudamqp",
+    "logentries",
+    "newrelic",
+    "heroku-postgresql",
+    "scheduler"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
