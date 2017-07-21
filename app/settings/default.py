@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'crispy_forms',
     'django_celery_results',
+    'django_filters',
     # User Apps
     'app.schedule',
 ]
