@@ -20,11 +20,11 @@ urlpatterns = [
 
     # Dentists
     url(r'^dentists/$', DentistList.as_view(), name='dentists'),
-    url(r'^dentists/me$', DentistDetail.as_view(), name='dentist-detail'),
+    url(r'^dentists/me/$', DentistDetail.as_view(), name='dentist-detail'),
 
     # Clinics
     url(r'^clinics/$', ClinicList.as_view(), name='clinics'),
     url(r'^clinics/(?P<pk>[0-9]+)/$', ClinicDetail.as_view(), name='clinic-detail'),
-    url(r'^clinics/(?P<pk>[0-9]+)/patients$', ClinicPatients.as_view(), name='clinic-patients'),
+    url(r'^clinics/(?P<pk>[0-9]+)/patients/$', ClinicPatients.as_view(), name='clinic-patients'),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
