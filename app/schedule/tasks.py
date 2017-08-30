@@ -22,4 +22,4 @@ def send_message(self, to, message, sg_user, sg_password):
         # Workaround for Celery issue. Remove after next version is released.
         tz = pytz.timezone(settings.TIME_ZONE)
         self.request.expires = tz.localize(datetime.strptime(self.request.expires[:-6], '%Y-%m-%dT%H:%M:%S'))
-        self.retry(exc=e, max_retries=50)
+        self.retry(exc=e, max_retries=2000, countdown=60 * 5)
