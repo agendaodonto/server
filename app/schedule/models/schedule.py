@@ -77,7 +77,7 @@ class Schedule(TimeStampedModel):
     def create_notification(self):
         start_time = settings.MESSAGE_ETA
         end_time = settings.MESSAGE_EXPIRES
-        msg_datetime = self.date.replace(**start_time, tzinfo=self.tz) - timedelta(days=1)
+        msg_datetime = self.date.replace(**start_time) - timedelta(days=1)
         msg_expires = msg_datetime.replace(**end_time)
         message = send_message.apply_async((self.patient.phone, self.get_message(), self.dentist.sg_user,
                                             self.dentist.sg_password), eta=msg_datetime, expires=msg_expires)
