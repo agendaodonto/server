@@ -1,5 +1,4 @@
 import json
-import time
 from datetime import datetime, timedelta
 
 import pytz
@@ -270,3 +269,10 @@ class ScheduleNotificationTest(TestCase):
         with Mocker() as m:
             m.get(SMSGateway.BASE_URL + '/api/v3/devices', text='<html', status_code=500)
             self.assertRaises(DeviceNotFoundError, self.sms.get_best_device)
+
+    @override_settings(APP_MESSENGER_CLASS='app.schedule.libs.sms.SMS')
+    def test_notification_task(self):
+        with Mocker() as m:
+            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.get_response('devices_not_suitable'))
+            self.schedule.duration = 20
+            self.assertRaises(DeviceNotFoundError, self.schedule.save)
