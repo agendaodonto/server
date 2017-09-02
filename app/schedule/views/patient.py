@@ -1,6 +1,5 @@
-import django_filters
 from django.db.models import Q
-from django_filters.rest_framework import FilterSet
+from django_filters.rest_framework import FilterSet, CharFilter
 from rest_framework import generics
 from rest_framework import permissions
 
@@ -11,9 +10,15 @@ from app.schedule.serializers.schedule import ScheduleSerializer
 
 
 class PatientFilter(FilterSet):
-    name = django_filters.CharFilter(name='name', lookup_expr='icontains')
-    last_name = django_filters.CharFilter(name='last_name', lookup_expr='icontains')
-    phone = django_filters.CharFilter(name='phone', lookup_expr='icontains')
+    name = CharFilter(name='name', lookup_expr='icontains')
+    last_name = CharFilter(name='last_name', lookup_expr='icontains')
+    phone = CharFilter(name='phone', lookup_expr='icontains')
+    full_name = CharFilter(name='full_name', method='search_by_full_name')
+
+    def search_by_full_name(self, qs, name, value):
+        for term in value.split():
+            qs = qs.filter(Q(name__icontains=term) | Q(last_name__icontains=term))
+        return qs
 
     class Meta:
         model = Patient
