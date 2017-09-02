@@ -4,12 +4,12 @@ from datetime import datetime, timedelta
 
 import pytz
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from requests_mock import Mocker
 from rest_framework.test import APITestCase
 from rest_framework_jwt.settings import api_settings
 
-from app.schedule.libs.sms import SMS
+from app.schedule.libs.sms import SMS, DeviceNotFoundError
 from app.schedule.libs.sms_gateway import SMSGateway
 from app.schedule.models import Schedule
 from app.schedule.models.clinic import Clinic
@@ -182,21 +182,6 @@ class ScheduleAPITest(APITestCase):
 
 
 class ScheduleNotificationTest(TestCase):
-    DEVICES_MOCK = "{\"success\": \"True\", \"result\": {\"data\": [{\"model\": \"SM-G930F\", \"battery\": \"50\", \"wifi\": \"1\", \"provider\": \"TIMBRASIL | TIM\", \"id\": \"123456\", \"created_at\": \"False\", \"last_seen\": " + str(
-        int(
-            time.time())) + ", \"country\": \"br\", \"lng\": \"-47.1592126\", \"signal\": \"100\", \"number\": \"\", \"make\": \"Samsung\", \"lat\": \"-22.8414491\", \"name\": \"Device 28982\", \"connection_type\": \"4G\"}, {\"model\": \"SM-G930F\", \"battery\": \"100\", \"wifi\": \"0\", \"provider\": \"CLARO BR\", \"id\": \"29772\", \"created_at\": \"False\", \"last_seen\": " + str(
-        int(
-            time.time())) + ", \"country\": \"br\", \"lng\": \"0\", \"signal\": \"60\", \"number\": \"\", \"make\": \"Samsung\", \"lat\": \"0\", \"name\": \"Device 29772\", \"connection_type\": \"4G\"}], \"per_page\": 500, \"current_page\": 1, \"from\": 1, \"total\": 2, \"to\": 2, \"last_page\": 1}}"
-    DEVICES_NOT_AVAILABLE_MOCK = "{\"success\": \"True\", \"result\": {\"data\": [{\"model\": \"SM-G930F\", \"battery\": \"13\", \"wifi\": \"1\", \"provider\": \"TIMBRASIL | TIM\", \"id\": \"123456\", \"created_at\": \"False\", \"last_seen\": " + str(
-        int(
-            time.time())) + ", \"country\": \"br\", \"lng\": \"-47.1592126\", \"signal\": \"80\", \"number\": \"\", \"make\": \"Samsung\", \"lat\": \"-22.8414491\", \"name\": \"Device 28982\", \"connection_type\": \"4G\"},{\"model\": \"SM-G935F\", \"battery\": \"13\", \"wifi\": \"1\", \"provider\": \"TIMBRASIL | TIM\", \"id\": \"55555\", \"created_at\": \"False\", \"last_seen\":" + str(
-        int(
-            time.time())) + ", \"country\": \"br\", \"lng\": \"-47.1592126\", \"signal\": \"0\", \"number\": \"\", \"make\": \"Samsung\", \"lat\": \"-22.8414491\", \"name\": \"Device 28982\", \"connection_type\": \"4G\"},{\"model\": \"SM-G930F\", \"battery\": \"100\", \"wifi\": \"0\", \"provider\": \"CLARO BR\", \"id\": \"29772\", \"created_at\": \"False\", \"last_seen\": 1474735362, \"country\": \"br\", \"lng\": \"0\", \"signal\": \"80\", \"number\": \"\", \"make\": \"Samsung\", \"lat\": \"0\", \"name\": \"Device 29772\", \"connection_type\": \"4G\"}], \"per_page\": 500, \"current_page\": 1, \"from\": 1, \"total\": 2, \"to\": 2, \"last_page\": 1}}"
-    MESSAGE_MOCK = "{\"result\": {\"fails\": [], \"success\": [{\"error\": \"\", \"queued_at\": 0, \"device_id\": \"28982\", \"status\": \"pending\", \"delivered_at\": 0, \"sent_at\": 0, \"created_at\": 1474737310, \"expires_at\": 1474740910, \"canceled_at\": 0, \"contact\": {\"id\": \"3655322\", \"number\": \"+5519993770437\", \"name\": \"+5519993770437\"}, \"id\": \"24081213\", \"message\": \"blah\", \"send_at\": 1474737310, \"received_at\": 0, \"failed_at\": 0}]}, \"success\": \"True\"}"
-    MESSAGE_SENT_MOCK = "{\"result\": {\"canceled_at\": 0, \"received_at\": 0, \"send_at\": 1474936985, \"delivered_at\": 0, \"expires_at\": 1474940585, \"error\": \"\", \"status\": \"sent\", \"queued_at\": 1474980195, \"contact\": {\"id\": \"4308251\", \"name\": \"Andr&eacute; Roggeri Campos\", \"number\": \"993770437\"}, \"id\": \"24246261\", \"created_at\": 1474936985, \"sent_at\": 0, \"failed_at\": 0, \"message\": \"teste\", \"device_id\": \"28982\"}, \"success\": \"True\"}"
-    MESSAGE_FAILED_MOCK = "{\"result\": {\"canceled_at\": 0, \"received_at\": 0, \"send_at\": 1474936985, \"delivered_at\": 0, \"expires_at\": 1474940585, \"error\": \"\", \"status\": \"failed\", \"queued_at\": 1474980195, \"contact\": {\"id\": \"4308251\", \"name\": \"Andr&eacute; Roggeri Campos\", \"number\": \"993770437\"}, \"id\": \"24246261\", \"created_at\": 1474936985, \"sent_at\": 0, \"failed_at\": 0, \"message\": \"teste\", \"device_id\": \"28982\"}, \"success\": \"True\"}"
-    MESSAGE_STUCK_MOCK = "{\"result\": {\"canceled_at\": 0, \"received_at\": 0, \"send_at\": 1474936985, \"delivered_at\": 0, \"expires_at\": 1474940585, \"error\": \"\", \"status\": \"queued\", \"queued_at\": 1474980195, \"contact\": {\"id\": \"4308251\", \"name\": \"Andr&eacute; Roggeri Campos\", \"number\": \"993770437\"}, \"id\": \"24246261\", \"created_at\": 1474936985, \"sent_at\": 0, \"failed_at\": 0, \"message\": \"teste\", \"device_id\": \"28982\"}, \"success\": \"True\"}"
-
     def setUp(self):
         self.dentist = Dentist.objects.create_user('John', 'Snow', 'john@snow.com', 'M', '1234', 'SP', 'john')
         self.clinic = Clinic.objects.create(
@@ -218,6 +203,11 @@ class ScheduleNotificationTest(TestCase):
             date=datetime(2016, 9, 15, 15, 0, tzinfo=pytz.utc),
             duration=60
         )
+        self.sms = SMS('aaa', 'bbb')
+
+    def get_response(self, file_name, **kwargs) -> bin:
+        with open('app/schedule/tests/sms_gateway_responses/{}.json'.format(file_name)) as file:
+            return file.read()
 
     def test_get_schedule_message_any_date(self):
         expected = "Olá Sr. Luís, " \
@@ -242,41 +232,41 @@ class ScheduleNotificationTest(TestCase):
 
         self.assertEqual(self.schedule.get_message(), expected)
 
+    @override_settings(SMS_MIN_MISSING_TIME=99999999)
     def test_get_best_device(self):
         with Mocker() as m:
-            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.DEVICES_MOCK)
-            sms = SMS('test', 'bbb')
+            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.get_response('devices'))
 
-            self.assertEqual('123456', sms.get_best_device())
+            self.assertEqual('1', self.sms.get_best_device())
 
     def test_send_sms(self):
         with Mocker() as m:
-            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.DEVICES_MOCK)
-            m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.MESSAGE_MOCK)
-            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/24081213', text=self.MESSAGE_SENT_MOCK)
-            sms = SMS('test', 'bbb')
+            m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.get_response('message_sent'))
+            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/1', text=self.get_response('message_received'))
 
-            self.assertTrue(sms.send_message('123456', 'test message'))
+            self.assertTrue(self.sms.send_message('123456', 'test message'))
 
     def test_failed_sms(self):
         with Mocker() as m:
-            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.DEVICES_MOCK)
-            m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.MESSAGE_MOCK)
-            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/24081213', text=self.MESSAGE_FAILED_MOCK)
-            sms = SMS('test', 'bbb')
+            m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.get_response('message_sent'))
+            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/1', text=self.get_response('message_failed'))
 
-            self.assertFalse(sms.send_message('123456', 'test message'))
+            self.assertFalse(self.sms.send_message('123456', 'test message'))
 
+    @override_settings(SMS_TIMEOUT=0.1)
     def test_stuck_sms(self):
         with Mocker() as m:
-            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.DEVICES_MOCK)
-            m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.MESSAGE_MOCK)
-            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/24081213', text=self.MESSAGE_STUCK_MOCK)
-            sms = SMS('test', 'bbb')
-            sms.SMS_TIMEOUT = 0.1
+            m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.get_response('message_sent'))
+            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/1', text=self.get_response('message_pending'))
 
-            self.assertFalse(sms.send_message('123456', 'test message'))
+            self.assertFalse(self.sms.send_message('123456', 'test message'))
 
     def test_no_device_available(self):
         with Mocker() as m:
-            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.DEVICES_NOT_AVAILABLE_MOCK)
+            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.get_response('devices_not_suitable'))
+            self.assertRaises(DeviceNotFoundError, self.sms.get_best_device)
+
+    def test_gateway_down(self):
+        with Mocker() as m:
+            m.get(SMSGateway.BASE_URL + '/api/v3/devices', text='<html', status_code=500)
+            self.assertRaises(DeviceNotFoundError, self.sms.get_best_device)
