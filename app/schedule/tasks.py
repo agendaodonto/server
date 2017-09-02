@@ -17,6 +17,7 @@ def send_message(self, to, message, sg_user, sg_password):
     sms_class = load_sms_class()
     try:
         messenger = sms_class(sg_user, sg_password)
+        messenger.get_best_device()
         messenger.send_message(to, message)
     except DeviceNotFoundError as e:
         # Workaround for Celery issue. Remove after next version is released.
