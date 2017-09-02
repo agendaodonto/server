@@ -41,3 +41,4 @@ APP_MESSENGER_CLASS = 'app.schedule.libs.sms.DummySMS'
 CELERY_ALWAYS_EAGER = True
 CELERY_BROKER_URL = 'memory://localhost:8000//'
 CELERY_EAGER_PROPAGATE = True
+CELERY_TASK_MAX_RETRY = 1

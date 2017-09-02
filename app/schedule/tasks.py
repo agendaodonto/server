@@ -1,7 +1,5 @@
-from datetime import datetime
 from importlib import import_module
 
-import pytz
 from django.conf import settings
 
 from app.schedule.celery import celery_app
@@ -20,7 +18,4 @@ def send_message(self, to, message, sg_user, sg_password):
         messenger.get_best_device()
         messenger.send_message(to, message)
     except DeviceNotFoundError as e:
-        # Workaround for Celery issue. Remove after next version is released.
-        tz = pytz.timezone(settings.TIME_ZONE)
-        self.request.expires = tz.localize(datetime.strptime(self.request.expires[:-6], '%Y-%m-%dT%H:%M:%S'))
-        self.retry(exc=e, max_retries=2000, countdown=60 * 5)
+        self.retry(exc=e, max_retries=settings.CELERY_TASK_MAX_RETRY, countdown=60 * 5)
