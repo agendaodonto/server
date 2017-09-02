@@ -1,4 +1,7 @@
 import requests
+from requests.exceptions import ConnectionError
+
+HTTP_ERROR_CODES = [500, 501, 502, 503, 504, 505]
 
 
 # noinspection PyDefaultArgument,PyShadowingBuiltins
@@ -9,27 +12,31 @@ class SMSGateway(object):
         self.__username = username
         self.__password = password
 
-    def make_request(self, url: str, method: str, fields: dict={})-> dict:
+    def make_request(self, url: str, method: str, fields: dict = {}) -> dict:
         fields['email'] = self.__username
         fields['password'] = self.__password
 
         url = ''.join([self.BASE_URL, url])
 
-        if method == 'GET':
-            result = {}
-            r = requests.get(url, params=fields)
-            result['status'] = r.status_code
-            result['response'] = r.json()
+        result = {}
+        try:
+            if method == 'GET':
+                req = requests.get(url, params=fields)
+            elif method == 'POST':
+                req = requests.post(url, data=fields)
+            else:
+                raise ValueError('Method {} doesn\'t exists'.format(method))
+        except ConnectionError:
+            return {'response': {'success': False}}
 
-            return result
+        result['status'] = req.status_code
 
-        elif method == 'POST':
-            result = {}
-            r = requests.post(url, data=fields)
-            result['status'] = r.status_code
-            result['response'] = r.json()
+        if req.status_code in HTTP_ERROR_CODES:
+            result['response'] = {'success': False}
+        else:
+            result['response'] = req.json()
 
-            return result
+        return result
 
     def get_devices(self, page=1):
         return self.make_request('/api/v3/devices', 'GET', {'page': page})
