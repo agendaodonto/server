@@ -13,13 +13,12 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from app.schedule.libs.sms import SMS
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%bkwz_#j3b0_s)%uh$#j+=2z+2vw(po#_a@l%st8qe*ng-3a5-'
+SECRET_KEY = 'Not-So-Secret'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -199,8 +198,11 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
 }
 
-APP_MESSENGER_CLASS = 'app.schedule.libs.sms.SMS'
-MESSAGE_ETA = {'hour': 14, 'minute': 0}
+SMS_GATEWAY_USER = os.getenv('SMS_GATEWAY_USER')
+SMS_GATEWAY_PASSWORD = os.getenv('SMS_GATEWAY_PASSWORD')
+
+APP_MESSENGER_CLASS = SMS
+MESSAGE_ETA = {'hour': 10, 'minute': 0}
 MESSAGE_EXPIRES = {'hour': 22, 'minute': 30}
 
 # Celery Settings
