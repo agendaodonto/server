@@ -174,3 +174,23 @@ class PatientAPITest(APITestCase):
         patient.sex = 'F'
 
         self.assertEqual(patient.get_sex_prefix(), 'Sra.')
+
+    def test_filter_full_name(self):
+        def test_filter(term, expected_count):
+            url = reverse('patients') + '?full_name=' + term
+            response = self.client.get(url)
+            data = json.loads(response.content.decode())
+            self.assertEquals(200, response.status_code)
+            self.assertEquals(len(data), expected_count)
+
+        common_data = {'phone': '1234', 'sex': 'M', 'clinic': self.clinic}
+
+        Patient.objects.create(name='John', last_name='Smith Joe', **common_data)
+        Patient.objects.create(name='John', last_name='Carl Joe', **common_data)
+        Patient.objects.create(name='Janet', last_name='Carl Joe', **common_data)
+        Patient.objects.create(name='Paul', last_name='Max Joe', **common_data)
+        Patient.objects.create(name='Robert', last_name='Adams Clark', **common_data)
+
+        test_filter('John Joe', 2)
+        test_filter('Joe', 4)
+        test_filter('B M L', 1)  # roBert adaMs cLark
