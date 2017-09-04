@@ -4,6 +4,9 @@
   "scripts": {
   },
   "env": {
+    "CLOUDAMQP_URL": {
+      "required": true
+    },
     "DJANGO_SETTINGS_MODULE": {
       "required": true
     },
@@ -15,20 +18,14 @@
     },
     "EMAIL_HOST_USER": {
       "required": true
-    },
-    "SMS_GATEWAY_USER": {
-      "required": true
-    },
-    "SMS_GATEWAY_PASSWORD": {
-      "required": true
     }
   },
   "formation": {
   },
   "addons": [
     "cloudamqp",
-    "heroku-postgresql",
-    "papertrail"
+    "logentries",
+    "heroku-postgresql"
   ],
   "buildpacks": [
     {
