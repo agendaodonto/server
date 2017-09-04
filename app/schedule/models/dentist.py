@@ -68,8 +68,6 @@ class Dentist(AbstractBaseUser):
     cro = models.CharField('CRO', max_length=15)
     cro_state = models.CharField('Estado Emissor', max_length=2, choices=CRO_STATE_OPTIONS)
     sex = models.CharField('Sexo', max_length=1, choices=SEX_TYPES)
-    sg_user = models.CharField('Usuário SMS Gateway', max_length=255, default='')
-    sg_password = models.CharField('Senha SMS Gateway', max_length=255, default='')
     is_active = models.BooleanField('Ativo', default=True)
     is_admin = models.BooleanField('Admin', default=False)
     is_superuser = models.BooleanField('Super Usuário', default=False)
