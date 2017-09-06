@@ -61,12 +61,14 @@ class SMS:
         start_time = datetime.datetime.now()
         while True:
             message = self.sms_gateway.get_message(message_id)['response']
-            if message['result']['status'] == 'sent':
-                return True
-            elif message['result']['status'] == 'failed':
-                logging.warning('Failure while sending SMS: {}'.format(message['result']['error']))
-                return False
-            elif (datetime.datetime.now() - start_time).seconds >= settings.SMS_TIMEOUT:
+            if message['success']:
+                if message['result']['status'] == 'sent':
+                    return True
+                elif message['result']['status'] == 'failed':
+                    logging.warning('Failure while sending SMS: {}'.format(message['result']['error']))
+                    return False
+
+            if (datetime.datetime.now() - start_time).seconds >= settings.SMS_TIMEOUT:
                 logging.warning('Timeout while sending SMS')
                 return False
 
