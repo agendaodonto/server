@@ -253,6 +253,12 @@ class ScheduleNotificationTest(TestCase):
             self.assertFalse(self.sms.send_message('123456', 'test message'))
 
     @override_settings(SMS_TIMEOUT=0.1)
+    def test_failed_wait_sms(self):
+        with Mocker() as m:
+            m.get(SMSGateway.BASE_URL + '/api/v3/messages/view/1', text='<html', status_code=500)
+            self.assertFalse(self.sms.wait_message_sent('1'))
+
+    @override_settings(SMS_TIMEOUT=0.1)
     def test_stuck_sms(self):
         with Mocker() as m:
             m.post(SMSGateway.BASE_URL + '/api/v3/messages/send', text=self.get_response('message_sent'))
