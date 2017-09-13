@@ -1,0 +1,5 @@
+requirements:
+  - requirements.txt:
+    update: all
+  - requirements-test.txt:
+    update: all
