@@ -5,6 +5,7 @@ python:
 env:
   - DJANGO_SETTINGS_MODULE=app.settings.test
 script:
+  - pip install -r requirements-test.txt
   - coverage run ./manage.py test
 after_success:
   - coveralls
