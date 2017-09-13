@@ -1,4 +1,3 @@
-
 from django.conf import settings
 
 from app.schedule.celery import celery_app
