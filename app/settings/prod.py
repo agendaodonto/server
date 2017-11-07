@@ -14,5 +14,5 @@ CORS_ORIGIN_WHITELIST = ('agendaodonto.herokuapp.com', 'https://agendaodonto-290
 DJOSER['DOMAIN'] = 'agendaodonto-29023.firebaseapp.com'
 
 # Celery Settings
-CELERY_BROKER_URL = os.environ['CLOUDAMQP_URL']
+CELERY_BROKER_URL = os.getenv('CLOUDAMQP_URL', None)
 CELERY_BROKER_HEARTBEAT = None
