@@ -7,7 +7,7 @@ from app.schedule.serializers.dentist import DentistSerializer
 class ClinicSerializer(ModelSerializer):
     class Meta:
         model = Clinic
-        fields = ('id', 'name', 'dentists')
+        fields = ('id', 'name', 'dentists', 'created', 'modified')
 
 
 class ClinicListSerializer(ClinicSerializer):
