@@ -1,5 +1,7 @@
-import django_filters
 import datetime
+
+import django_filters
+from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet
 from rest_framework import permissions
@@ -62,18 +64,35 @@ class ScheduleDetail(RetrieveUpdateDestroyAPIView):
         else:
             return ScheduleSerializer
 
+
 class ScheduleAttendance(APIView):
     @staticmethod
-    def get_data(user: Dentist, year: int):
-        data = {'absences': [], 'attendances': [], 'cancellations': []}
-        for month in range(1, 13):
-            schedules = Schedule.objects.filter(dentist=user).filter(date__year=year).filter(date__month=month)
-            data['attendances'].append(schedules.filter(status=1).count())
-            data['absences'].append(schedules.filter(status=2).count())
-            data['cancellations'].append(schedules.filter(status=3).count())
+    def get_data(user: Dentist, date: datetime.datetime):
+        data = {}
+        current_date = date
+        for _ in range(12):
+            current_date = current_date - relativedelta(months=1)
+            schedules = Schedule.objects \
+                .filter(dentist=user) \
+                .filter(date__year=current_date.year) \
+                .filter(date__month=current_date.month)
+
+            data[current_date.strftime('%Y-%m-01')] = {
+                'attendances': schedules.filter(status=1).count(),
+                'absences': schedules.filter(status=2).count(),
+                'cancellations': schedules.filter(status=3).count()
+            }
 
         return data
 
     def get(self, request):
-        year = request.query_params.get('year', datetime.datetime.now().year)
-        return Response(self.get_data(request.user, year))
+        request_date = request.query_params.get('date')
+        if request_date:
+            try:
+                request_date = datetime.datetime.strptime(request_date, '%Y-%m-%d')
+            except ValueError:
+                request_date = datetime.datetime.now()
+        else:
+            request_date = datetime.datetime.now()
+
+        return Response(self.get_data(request.user, request_date))
