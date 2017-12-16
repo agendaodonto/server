@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 
 import pytz
+from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from requests_mock import Mocker
@@ -136,6 +137,7 @@ class ScheduleAPITest(APITestCase):
         url = reverse('schedule-attendance')
 
         y = datetime.now().year
+        date_format = '{}-05-01'.format(y)
 
         Schedule.objects.create(
             patient=self.patient,
@@ -175,9 +177,26 @@ class ScheduleAPITest(APITestCase):
 
         response_data = json.loads(response.content.decode('utf-8'))
 
-        self.assertEqual(response_data['attendances'][4], 1)
-        self.assertEqual(response_data['absences'][4], 1)
-        self.assertEqual(response_data['cancellations'][4], 1)
+        self.assertEqual(response_data[date_format]['attendances'], 1)
+        self.assertEqual(response_data[date_format]['absences'], 1)
+        self.assertEqual(response_data[date_format]['cancellations'], 1)
+
+    def test_attendance_with_date(self):
+        url = reverse('schedule-attendance') + '?date=2017-06-15'
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertIsNotNone(response_data.get('2017-05-01'))
+        self.assertIsNotNone(response_data.get('2016-06-01'))
+
+    def test_attendance_with_wrong_date(self):
+        url = reverse('schedule-attendance') + '?date=NOT A DATE!'
+        now = datetime.now()
+        date_upper_limit = (now - relativedelta(months=1)).strftime('%Y-%m-01')
+        date_lower_limit = (now - relativedelta(years=1)).strftime('%Y-%m-01')
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertIsNotNone(response_data.get(date_upper_limit))
+        self.assertIsNotNone(response_data.get(date_lower_limit))
 
 
 class ScheduleNotificationTest(TestCase):
