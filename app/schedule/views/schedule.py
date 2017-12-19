@@ -76,11 +76,15 @@ class ScheduleAttendance(APIView):
                 .filter(dentist=user) \
                 .filter(date__year=current_date.year) \
                 .filter(date__month=current_date.month)
-
+            attendance = schedules.filter(status=1).count()
+            absences = schedules.filter(status=2).count()
+            cancellations = schedules.filter(status=3).count()
+            ratio = 0 if attendance == 0 else attendance / (absences + cancellations + attendance)
             data[current_date.strftime('%Y-%m-01')] = {
-                'attendances': schedules.filter(status=1).count(),
-                'absences': schedules.filter(status=2).count(),
-                'cancellations': schedules.filter(status=3).count()
+                'attendances': attendance,
+                'absences': absences,
+                'cancellations': cancellations,
+                'ratio': ratio
             }
 
         return data

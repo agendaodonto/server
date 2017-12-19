@@ -180,6 +180,7 @@ class ScheduleAPITest(APITestCase):
         self.assertEqual(response_data[date_format]['attendances'], 1)
         self.assertEqual(response_data[date_format]['absences'], 1)
         self.assertEqual(response_data[date_format]['cancellations'], 1)
+        self.assertEqual(response_data[date_format]['ratio'], 0.3333333333333333)
 
     def test_attendance_with_date(self):
         url = reverse('schedule-attendance') + '?date=2017-06-15'
@@ -197,6 +198,29 @@ class ScheduleAPITest(APITestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertIsNotNone(response_data.get(date_upper_limit))
         self.assertIsNotNone(response_data.get(date_lower_limit))
+
+    def test_attendance_ratio_zero_attendance(self):
+        url = reverse('schedule-attendance')
+        now = datetime.now()
+        date_format = '{}-05-01'.format(now.year)
+        Schedule.objects.create(
+            patient=self.patient,
+            dentist=self.dentist,
+            date=datetime(now.year, 5, 11, tzinfo=pytz.UTC),
+            duration=60,
+            status=2
+        )
+
+        Schedule.objects.create(
+            patient=self.patient,
+            dentist=self.dentist,
+            date=datetime(now.year, 5, 11, tzinfo=pytz.UTC),
+            duration=60,
+            status=3
+        )
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[date_format]['ratio'], 0)
 
 
 class ScheduleNotificationTest(TestCase):
