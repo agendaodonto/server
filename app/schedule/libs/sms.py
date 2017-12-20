@@ -27,6 +27,8 @@ class SMS:
                         best_device = device
                 except NotSuitableDevice as e:
                     logger.warning("Device {} not suitable because {}".format(device['id'], e))
+        else:
+            logger.error('Failed to retrieve the SMS Gateway devices')
 
         if not best_device:
             raise DeviceNotFoundError('No Device found.')
