@@ -8,7 +8,7 @@ from app.schedule.serializers.patient import PatientListSerializer
 class ScheduleSerializer(ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ('id', 'patient', 'dentist', 'date', 'duration', 'status', 'created', 'modified')
+        fields = ('id', 'patient', 'dentist', 'date', 'duration', 'status', 'created', 'modified', 'notification_status')
         read_only_fields = ('notification_status',)
 
 
