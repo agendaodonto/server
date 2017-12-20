@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 
 import pytz
+from celery import states
 from django.conf import settings
 from django.db.models import ForeignKey, DateTimeField, IntegerField, CharField
+from django_celery_results.models import TaskResult
 from model_utils.models import TimeStampedModel
 
 from app.schedule.celery import celery_app
@@ -82,3 +84,21 @@ class Schedule(TimeStampedModel):
         message = send_message.apply_async((self.patient.phone, self.get_message()), eta=msg_datetime,
                                            expires=msg_expires)
         return message.id
+
+    @property
+    def notification_status(self):
+        try:
+            task = TaskResult.objects.get(task_id=self.notification_task_id)
+            if task.status == states.REVOKED:
+                return 'EXPIRADO'
+            elif task.status == states.RETRY:
+                return 'AGENDADO'
+            elif task.status == states.SUCCESS:
+                if task.result == 'True':
+                    return 'ENVIADO'
+                else:
+                    return 'FALHOU'
+            else:
+                return 'DESCONHECIDO'
+        except TaskResult.DoesNotExist:
+            return 'AGENDADO'

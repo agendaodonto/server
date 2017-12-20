@@ -2,9 +2,11 @@ import json
 from datetime import datetime, timedelta
 
 import pytz
+from celery import states
 from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
+from django_celery_results.models import TaskResult
 from requests_mock import Mocker
 from rest_framework.test import APITestCase
 from rest_framework_jwt.settings import api_settings
@@ -223,6 +225,56 @@ class ScheduleAPITest(APITestCase):
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[date_format]['ratio'], 0)
+
+    def test_notification_status_without_notification(self):
+        url = reverse('schedules')
+        self.schedule.notification_task_id = None
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'AGENDADO')
+
+    def test_notification_status_expired_notification(self):
+        url = reverse('schedules')
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = states.REVOKED
+        task.save()
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'EXPIRADO')
+
+    def test_notification_status_retrying_notification(self):
+        url = reverse('schedules')
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = states.RETRY
+        task.save()
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'AGENDADO')
+
+    def test_notification_status_sent_notification(self):
+        url = reverse('schedules')
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = states.SUCCESS
+        task.result = True
+        task.save()
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'ENVIADO')
+
+    def test_notification_status_failed_notification(self):
+        url = reverse('schedules')
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = states.SUCCESS
+        task.result = False
+        task.save()
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'FALHOU')
+
 
 
 class ScheduleNotificationTest(TestCase):
