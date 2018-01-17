@@ -1,2 +1,0 @@
-web: gunicorn app.wsgi --log-file -
-celery: celery -A app.schedule worker --concurrency 4 --without-gossip --without-mingle --without-heartbeat --loglevel=info
