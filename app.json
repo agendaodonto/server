@@ -1,7 +1,10 @@
 {
-  "name": "Agenda Odonto Server",
+  "name": "Agenda Odonto Backend",
   "description": "Agenda Odonto Backend",
   "scripts": {
+    "dokku": {
+      "postdeploy": "python manage.py migrate --no-input"
+    }
   },
   "env": {
     "DJANGO_SETTINGS_MODULE": {
@@ -25,11 +28,6 @@
   },
   "formation": {
   },
-  "addons": [
-    "cloudamqp",
-    "heroku-postgresql",
-    "papertrail"
-  ],
   "buildpacks": [
     {
       "url": "heroku/python"
