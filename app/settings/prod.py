@@ -5,7 +5,9 @@ DEBUG = False
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', None)
 
-ALLOWED_HOSTS = ['agendaodonto.herokuapp.com']
+ALLOWED_HOSTS = [
+    'backend.agendaodonto.com'
+]
 
 DATABASES = {'default': dj_database_url.config()}
 
