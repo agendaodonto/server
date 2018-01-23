@@ -10,8 +10,8 @@ ALLOWED_HOSTS = ['agendaodonto.herokuapp.com']
 DATABASES = {'default': dj_database_url.config()}
 
 CORS_ORIGIN_WHITELIST = (
-    'https://agendaodonto.com',
-    'https://backend.agendaodonto.com',
+    'agendaodonto.com',
+    'backend.agendaodonto.com',
 )
 
 DJOSER['DOMAIN'] = 'agendaodonto.com'
