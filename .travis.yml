@@ -1,21 +1,22 @@
 language: python
 dist: trusty
 before_install:
-  - openssl aes-256-cbc -K $encrypted_a1ded07c56d0_key -iv $encrypted_a1ded07c56d0_iv -in deploy.key.enc -out deploy.key -d
+- openssl aes-256-cbc -K $encrypted_9687680d41ce_key -iv $encrypted_9687680d41ce_iv
+  -in deploy.key.enc -out deploy.key -d
 jobs:
   include:
-    - stage: test
-      script:
-        - echo flake8
-    - stage: test
-      python:
-        - '3.6'
-      env:
-        - DJANGO_SETTINGS_MODULE=app.settings.test
-      script:
-        - pip install -r requirements-test.txt
-        - coverage run ./manage.py test
-        - coveralls
-    - stage: deploy
-      script:
-        - scripts/deploy.sh
+  - stage: test
+    script:
+    - echo flake8
+  - stage: test
+    python:
+    - '3.6'
+    env:
+    - DJANGO_SETTINGS_MODULE=app.settings.test
+    script:
+    - pip install -r requirements-test.txt
+    - coverage run ./manage.py test
+    - coveralls
+  - stage: deploy
+    script:
+    - scripts/deploy.sh
