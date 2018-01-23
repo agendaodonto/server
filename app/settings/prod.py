@@ -9,9 +9,12 @@ ALLOWED_HOSTS = ['agendaodonto.herokuapp.com']
 
 DATABASES = {'default': dj_database_url.config()}
 
-CORS_ORIGIN_WHITELIST = ('agendaodonto.herokuapp.com', 'https://agendaodonto-29023.firebaseapp.com', 'http://agendaodonto-29023.firebaseapp.com', 'agendaodonto-29023.firebaseapp.com')
+CORS_ORIGIN_WHITELIST = (
+    'https://agendaodonto.com',
+    'https://backend.agendaodonto.com',
+)
 
-DJOSER['DOMAIN'] = 'agendaodonto-29023.firebaseapp.com'
+DJOSER['DOMAIN'] = 'agendaodonto.com'
 
 # Celery Settings
 CELERY_BROKER_URL = os.getenv('RABBITMQ_URL', None)
