@@ -1,16 +1,12 @@
 language: python
 dist: trusty
-before_install:
-- openssl aes-256-cbc -K $encrypted_9687680d41ce_key -iv $encrypted_9687680d41ce_iv
-  -in deploy.key.enc -out deploy.key -d
 jobs:
   include:
   - stage: test
     script:
     - echo flake8
   - stage: test
-    python:
-    - '3.6'
+    python: 3.6
     env:
     - DJANGO_SETTINGS_MODULE=app.settings.test
     script:
@@ -18,5 +14,11 @@ jobs:
     - coverage run ./manage.py test
     - coveralls
   - stage: deploy
+    if: type = push
     script:
     - scripts/deploy.sh
+before_install:
+- openssl aes-256-cbc -k "$SECRET" -in .travis/deploy.key.enc -out .travis/deploy.key -d
+env:
+  global:
+    secure: Wut/hSzxL/fA58X3GBA7cyTh9Iy7s9urMneRMK/2/L8y/QCmTWJQgPSnt9h60ErGtJwEGB9/G/3QuxdaKdlcxLbORADJDYWpI6ZFUE7rp1yTRc2piiYEaeYbZ8q0QQtsR341aXqDTDjT2XiclmXJbtr8GYUVQ9IS1/FW1dEyyBt4sYqOsLl/Y3GQD9WFJnAx0oZ9QF7/WREzFEHGdfRtrz8lRJAMwqCOFxbYBZYewbX+vPfXgpybEp2nrY+iyvoHK3IWU9uiUUtUxhNqRLdq6v/HOzYngnu02CD8XSmQVaVw+DiCdE9loLePs+FcTnXO1XNGrr3hL5nQ5D9kuHtfT6l6F21ebobs4iAodL+Kitp3uKE1Q+gDtiPhPxDvFZ3DREAHvTZu611gYS46DVO1TM2FuhLT8xfUdc0zLmrdFl+ksiOsxFk1S/y6XbmrB3DjwWipkHKaVQcwxgRiInFQ5hNKu0Wsvr6E8DvBv2HcJAjtUyS4Dv69hbSJvemgvsA4iEmPyjE+sXorN9GLxiYcabVsxdMWP+f2OZGMg8dMVgrcDda1uyifCsErBM9cztKKNnpXpje+SDyeKZgvELQ7cIxDcsNbTCy71/mL3iBBHK6sxknaQKuOT+OWmkZ6K7c0ecgo0BILSPxE6MMeZhVUOigHj5vEvnEpvJXk7+gSt3s=
