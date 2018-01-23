@@ -136,13 +136,14 @@ class ScheduleAPITest(APITestCase):
     def test_get_attendance(self):
         url = reverse('schedule-attendance')
 
-        y = datetime.now().year
-        date_format = '{}-05-01'.format(y)
+        now = datetime.now()
+        relative_date = (now - relativedelta(months=1))
+        date_format = relative_date.strftime('%Y-%m-01')
 
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime(y, 5, 11, tzinfo=pytz.UTC),
+            date=relative_date,
             duration=60,
             status=1
         )
@@ -150,7 +151,7 @@ class ScheduleAPITest(APITestCase):
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime(y, 5, 11, tzinfo=pytz.UTC),
+            date=relative_date,
             duration=60,
             status=2
         )
@@ -158,7 +159,7 @@ class ScheduleAPITest(APITestCase):
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime(y, 5, 11, tzinfo=pytz.UTC),
+            date=relative_date,
             duration=60,
             status=3
         )
@@ -166,7 +167,7 @@ class ScheduleAPITest(APITestCase):
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime(y + 1, 5, 11, tzinfo=pytz.UTC),
+            date=relative_date + relativedelta(years=1),
             duration=60,
             status=3
         )
@@ -202,11 +203,12 @@ class ScheduleAPITest(APITestCase):
     def test_attendance_ratio_zero_attendance(self):
         url = reverse('schedule-attendance')
         now = datetime.now()
-        date_format = '{}-05-01'.format(now.year)
+        relative_date = (now - relativedelta(months=1))
+        date_format = relative_date.strftime('%Y-%m-01')
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime(now.year, 5, 11, tzinfo=pytz.UTC),
+            date=relative_date,
             duration=60,
             status=2
         )
@@ -214,7 +216,7 @@ class ScheduleAPITest(APITestCase):
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime(now.year, 5, 11, tzinfo=pytz.UTC),
+            date=relative_date,
             duration=60,
             status=3
         )
