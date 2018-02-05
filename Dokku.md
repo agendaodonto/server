@@ -23,3 +23,8 @@ This a basic step by step how to deploy this app on a [Dokku instance](https://g
 9. Setup Let's Encrypt (Optional, but recommended)
  - Add email as a global variable `dokku config:set --global DOKKU_LETSENCRYPT_EMAIL=domain@tld.com`
  - Run configuration command `dokku letsencrypt backend-staging`
+10. Setup logging service to Papertrail (Optional, but recommended)
+ - Install Logspout plugin `dokku plugin:install https://github.com/michaelshobbs/dokku-logspout.git`
+ - Go to [Papertrail](https://papertrailapp.com/) and add a new system
+ - Configure the logspout logspout at /home/dokku/.logspout/OPTS
+   With a new line: `export DOKKU_LOGSPOUT_SYSLOG_SERVER=syslog+tls://YOU-PAPERTRAIL-URL`
