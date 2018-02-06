@@ -94,7 +94,7 @@ class Schedule(TimeStampedModel):
             elif task.status == states.RETRY:
                 return 'AGENDADO'
             elif task.status == states.SUCCESS:
-                if task.result == 'True':
+                if task.result.upper() == 'TRUE':
                     return 'ENVIADO'
                 else:
                     return 'FALHOU'
