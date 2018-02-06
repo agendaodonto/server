@@ -270,6 +270,28 @@ class ScheduleAPITest(APITestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'FALHOU')
 
+    def test_notification_status_unknown_notification(self):
+        url = reverse('schedules')
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = states.IGNORED
+        task.result = False
+        task.save()
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'DESCONHECIDO')
+
+    def test_notification_status_unknown_result_notification(self):
+        url = reverse('schedules')
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = states.IGNORED
+        task.result = {'obj': 'err'}
+        task.save()
+        response = self.client.get(url)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data[0]['notification_status'], 'DESCONHECIDO')
+
 
 class ScheduleNotificationTest(TestCase):
     def setUp(self):
