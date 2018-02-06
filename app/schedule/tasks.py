@@ -12,6 +12,6 @@ def send_message(self, to, message):
     try:
         messenger = messenger(user, password)
         messenger.get_best_device()
-        messenger.send_message(to, message)
+        return messenger.send_message(to, message)
     except DeviceNotFoundError as e:
         self.retry(exc=e, max_retries=settings.CELERY_TASK_MAX_RETRY, countdown=60 * 5)
