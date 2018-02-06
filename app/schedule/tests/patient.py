@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pytz
 from django.core.urlresolvers import reverse
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
-from rest_framework_jwt.settings import api_settings
 
 from app.schedule.models import Schedule
 from app.schedule.models.clinic import Clinic
@@ -25,15 +25,11 @@ class PatientAPITest(APITestCase):
         self.clinic.dentists.add(self.dentist)
         self.clinic.dentists.add(self.extra_dentist)
         self.clinic.save()
-        self.api_authentication()
+        self.authenticate()
 
-    def api_authentication(self):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        payload = jwt_payload_handler(self.dentist)
-        token = jwt_encode_handler(payload)
-        self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
+    def authenticate(self):
+        token = Token.objects.create(user=self.dentist)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
     def test_get_patients(self):
         url = reverse('patients')

@@ -5,11 +5,11 @@ import pytz
 from celery import states
 from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, Client
 from django_celery_results.models import TaskResult
 from requests_mock import Mocker
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
-from rest_framework_jwt.settings import api_settings
 
 from app.schedule.libs.sms import SMS, DeviceNotFoundError
 from app.schedule.libs.sms_gateway import SMSGateway
@@ -44,16 +44,11 @@ class ScheduleAPITest(APITestCase):
             date=datetime.now(tz=pytz.timezone('America/Sao_Paulo')),
             duration=60
         )
+        self.authenticate()
 
-        self.api_authentication()
-
-    def api_authentication(self):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        payload = jwt_payload_handler(self.dentist)
-        token = jwt_encode_handler(payload)
-        self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
+    def authenticate(self):
+        token = Token.objects.create(user=self.dentist)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
     def test_get_schedule(self):
         url = reverse('schedules')
@@ -274,7 +269,6 @@ class ScheduleAPITest(APITestCase):
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'FALHOU')
-
 
 
 class ScheduleNotificationTest(TestCase):
