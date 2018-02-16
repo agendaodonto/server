@@ -292,6 +292,32 @@ class ScheduleAPITest(APITestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'DESCONHECIDO')
 
+    def test_should_create_notification_future_schedule_during_schedule_update(self):
+        url = reverse('schedule-detail', kwargs={"pk": self.schedule.pk})
+        prev_task_id = self.schedule.notification_task_id
+        body = {
+            'patient': self.patient.id,
+            'dentist': self.dentist.id,
+            'date': datetime.now(tz=pytz.timezone('America/Sao_Paulo')) + timedelta(days=1),
+            'duration': 50
+        }
+
+        response = json.loads(self.client.put(url, body).content.decode('utf-8'))
+        self.assertEqual(response['notification_status'], 'AGENDADO')
+        self.assertNotEquals(prev_task_id, Schedule.objects.get(pk=self.schedule.pk))
+
+    def test_should_create_notification_future_schedule_during_schedule_creation(self):
+        url = reverse('schedules')
+        body = {
+            'patient': self.patient.id,
+            'dentist': self.dentist.id,
+            'date': datetime.now(tz=pytz.timezone('America/Sao_Paulo')) + timedelta(days=1),
+            'duration': 50
+        }
+
+        response = json.loads(self.client.post(url, body).content.decode('utf-8'))
+        self.assertEqual(response['notification_status'], 'AGENDADO')
+
 
 class ScheduleNotificationTest(TestCase):
     def setUp(self):
