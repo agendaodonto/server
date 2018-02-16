@@ -50,12 +50,12 @@ class Schedule(TimeStampedModel):
         message = "Olá {patient_prefix} {patient_name}, " \
                   "não se esqueça de sua consulta odontológica " \
                   "{schedule_date} às {schedule_time}.".format(
-            patient_prefix=self.patient.get_sex_prefix(),
-            patient_name=self.patient.name,
-            dentist_prefix=self.dentist.get_sex_prefix(),
-            dentist_name=self.dentist.first_name,
-            schedule_date=schedule_date,
-            schedule_time=local_date.strftime("%H:%M"))
+                    patient_prefix=self.patient.get_sex_prefix(),
+                    patient_name=self.patient.name,
+                    dentist_prefix=self.dentist.get_sex_prefix(),
+                    dentist_name=self.dentist.first_name,
+                    schedule_date=schedule_date,
+                    schedule_time=local_date.strftime("%H:%M"))
 
         return message
 
