@@ -96,8 +96,10 @@ class Schedule(TimeStampedModel):
             elif task.status == states.SUCCESS:
                 if task.result.upper() == 'TRUE':
                     return 'ENVIADO'
-                else:
+                elif task.result.upper() == 'FALSE':
                     return 'FALHOU'
+                else:
+                    return 'DESCONHECIDO'
             else:
                 return 'DESCONHECIDO'
         except TaskResult.DoesNotExist:
