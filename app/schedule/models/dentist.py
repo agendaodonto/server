@@ -80,7 +80,3 @@ class Dentist(AbstractBaseUser):
 
     def get_sex_prefix(self):
         return 'Dr.' if self.sex == 'M' else 'Dra.'
-
-    @property
-    def is_staff(self):
-        return self.is_admin
