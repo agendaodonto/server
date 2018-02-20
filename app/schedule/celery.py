@@ -12,7 +12,7 @@ celery_app.conf.update(
     broker_heartbeat=settings.CELERY_BROKER_HEARTBEAT,
     worker_send_task_events=settings.CELERY_SEND_EVENTS,
     event_queue_expires=settings.CELERY_EVENT_QUEUE_EXPIRES,
-    default_queue=settings.CELERY_DEFAULT_QUEUE
+    task_default_queue=settings.CELERY_DEFAULT_QUEUE
 )
 
 celery_app.autodiscover_tasks()
