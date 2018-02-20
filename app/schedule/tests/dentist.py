@@ -25,3 +25,7 @@ class DentistAPITest(APITestCase):
         self.assertEqual(len(json.loads(response.content.decode('utf-8'))),
                          Dentist.objects.filter(cro__contains='234').count())
         self.assertEqual(200, response.status_code)
+
+    def test_get_dentist_name(self):
+        self.assertEqual(self.dentist.get_short_name(), 'John')
+        self.assertEqual(self.dentist.get_full_name(), 'John Snow')
