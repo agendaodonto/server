@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 import pytz
 from celery import states
@@ -61,11 +61,11 @@ class Schedule(TimeStampedModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        if self.date.date() > date.today():
+            if self.notification_task_id:
+                self.revoke_notification()
 
-        if self.notification_task_id:
-            self.revoke_notification()
-
-        self.notification_task_id = self.create_notification()
+            self.notification_task_id = self.create_notification()
 
         return super().save(force_insert, force_update, using, update_fields)
 
@@ -103,4 +103,7 @@ class Schedule(TimeStampedModel):
             else:
                 return 'DESCONHECIDO'
         except TaskResult.DoesNotExist:
-            return 'AGENDADO'
+            if self.date.date() > date.today():
+                return 'AGENDADO'
+            else:
+                return 'EXPIRADO'
