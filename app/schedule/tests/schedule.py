@@ -273,7 +273,7 @@ class ScheduleAPITest(APITestCase):
 
     def test_notification_status_unknown_result_notification(self):
         url = reverse('schedules')
-        task = self.create_notification_task(states.IGNORED)
+        task = self.create_notification_task(states.SUCCESS)
         task.result = {'obj': 'err'}
         task.save()
         response = self.client.get(url)
