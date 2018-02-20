@@ -190,3 +190,15 @@ class PatientAPITest(APITestCase):
         test_filter('John Joe', 2)
         test_filter('Joe', 4)
         test_filter('B M L', 1)  # roBert adaMs cLark
+
+    def test_get_patient_details(self):
+        patient = Patient.objects.create(
+            name='Test',
+            last_name='Patient A',
+            phone='1234',
+            sex='M',
+            clinic=self.clinic
+        )
+        url = reverse('patient-detail', kwargs=({'pk': patient.pk}))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
