@@ -41,7 +41,7 @@ class ScheduleAPITest(APITestCase):
         self.schedule = Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
-            date=datetime.now(tz=pytz.timezone('America/Sao_Paulo')),
+            date=datetime.now(tz=pytz.timezone('America/Sao_Paulo')) + timedelta(days=1),
             duration=60
         )
         self.authenticate()
@@ -49,6 +49,14 @@ class ScheduleAPITest(APITestCase):
     def authenticate(self):
         token = Token.objects.create(user=self.dentist)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+    def create_notification_task(self, status, result=None):
+        task = TaskResult.objects.create()
+        task.task_id = self.schedule.notification_task_id
+        task.status = status
+        task.result = result
+        task.save()
+        return task
 
     def test_get_schedule(self):
         url = reverse('schedules')
@@ -230,69 +238,49 @@ class ScheduleAPITest(APITestCase):
 
     def test_notification_status_expired_notification(self):
         url = reverse('schedules')
-        task = TaskResult.objects.create()
-        task.task_id = self.schedule.notification_task_id
-        task.status = states.REVOKED
-        task.save()
+        self.create_notification_task(states.REVOKED)
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'EXPIRADO')
 
     def test_notification_status_retrying_notification(self):
         url = reverse('schedules')
-        task = TaskResult.objects.create()
-        task.task_id = self.schedule.notification_task_id
-        task.status = states.RETRY
-        task.save()
+        self.create_notification_task(states.RETRY)
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'AGENDADO')
 
     def test_notification_status_sent_notification(self):
         url = reverse('schedules')
-        task = TaskResult.objects.create()
-        task.task_id = self.schedule.notification_task_id
-        task.status = states.SUCCESS
-        task.result = True
-        task.save()
+        self.create_notification_task(states.SUCCESS, True)
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'ENVIADO')
 
     def test_notification_status_failed_notification(self):
         url = reverse('schedules')
-        task = TaskResult.objects.create()
-        task.task_id = self.schedule.notification_task_id
-        task.status = states.SUCCESS
-        task.result = False
-        task.save()
+        self.create_notification_task(states.SUCCESS, False)
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'FALHOU')
 
     def test_notification_status_unknown_notification(self):
         url = reverse('schedules')
-        task = TaskResult.objects.create()
-        task.task_id = self.schedule.notification_task_id
-        task.status = states.IGNORED
-        task.result = False
-        task.save()
+        self.create_notification_task(states.IGNORED)
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'DESCONHECIDO')
 
     def test_notification_status_unknown_result_notification(self):
         url = reverse('schedules')
-        task = TaskResult.objects.create()
-        task.task_id = self.schedule.notification_task_id
-        task.status = states.IGNORED
+        task = self.create_notification_task(states.IGNORED)
         task.result = {'obj': 'err'}
         task.save()
         response = self.client.get(url)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 'DESCONHECIDO')
 
-    def test_should_create_notification_future_schedule_during_schedule_update(self):
+    def test_should_create_notification_future_schedule_update(self):
         url = reverse('schedule-detail', kwargs={"pk": self.schedule.pk})
         prev_task_id = self.schedule.notification_task_id
         body = {
@@ -306,7 +294,7 @@ class ScheduleAPITest(APITestCase):
         self.assertEqual(response['notification_status'], 'AGENDADO')
         self.assertNotEquals(prev_task_id, Schedule.objects.get(pk=self.schedule.pk))
 
-    def test_should_create_notification_future_schedule_during_schedule_creation(self):
+    def test_should_create_notification_future_schedule_creation(self):
         url = reverse('schedules')
         body = {
             'patient': self.patient.id,
@@ -317,6 +305,33 @@ class ScheduleAPITest(APITestCase):
 
         response = json.loads(self.client.post(url, body).content.decode('utf-8'))
         self.assertEqual(response['notification_status'], 'AGENDADO')
+
+    def test_should_not_create_notification_past_schedule_update(self):
+        url = reverse('schedule-detail', kwargs={"pk": self.schedule.pk})
+        self.create_notification_task(states.SUCCESS, True)
+        previous_task_id = self.schedule.notification_task_id
+        body = {
+            'patient': self.patient.id,
+            'dentist': self.dentist.id,
+            'date': datetime.now(tz=pytz.timezone('America/Sao_Paulo')),
+            'duration': 50
+        }
+
+        response = json.loads(self.client.put(url, body).content.decode('utf-8'))
+        self.assertEqual(response['notification_status'], 'ENVIADO')
+        self.assertEqual(previous_task_id, Schedule.objects.get(pk=self.schedule.pk).notification_task_id)
+
+    def test_should_not_create_notification_past_schedule_creation(self):
+        url = reverse('schedules')
+        body = {
+            'patient': self.patient.id,
+            'dentist': self.dentist.id,
+            'date': datetime.now(tz=pytz.timezone('America/Sao_Paulo')),
+            'duration': 50
+        }
+
+        response = json.loads(self.client.post(url, body).content.decode('utf-8'))
+        self.assertEqual(response['notification_status'], 'EXPIRADO')
 
 
 class ScheduleNotificationTest(TestCase):
@@ -339,6 +354,12 @@ class ScheduleNotificationTest(TestCase):
             patient=self.patient,
             dentist=self.dentist,
             date=datetime(2016, 9, 15, 15, 0, tzinfo=pytz.utc),
+            duration=60
+        )
+        self.future_schedule = Schedule.objects.create(
+            patient=self.patient,
+            dentist=self.dentist,
+            date=datetime.now() + timedelta(days=1),
             duration=60
         )
         self.sms = SMS('aaa', 'bbb')
@@ -420,4 +441,4 @@ class ScheduleNotificationTest(TestCase):
         with Mocker() as m:
             m.get(SMSGateway.BASE_URL + '/api/v3/devices', text=self.get_response('devices_not_suitable'))
             self.schedule.duration = 20
-            self.assertRaises(DeviceNotFoundError, self.schedule.save)
+            self.assertRaises(DeviceNotFoundError, self.future_schedule.save)
