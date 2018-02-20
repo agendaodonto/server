@@ -19,8 +19,9 @@ This a basic step by step how to deploy this app on a [Dokku instance](https://g
  - EMAIL_HOST
  - EMAIL_HOST_PASSWORD
  - EMAIL_HOST_USER
+ - WORKER_QUEUE
 8. Deploy the app once.
-9. Setup Let's Encrypt (Optional, but recommended)
+9. Setup Let's Encrypt (Optional, but *VERY* recommended)
  - Add email as a global variable `dokku config:set --global DOKKU_LETSENCRYPT_EMAIL=domain@tld.com`
  - Run configuration command `dokku letsencrypt backend-staging`
 10. Setup logging service to Papertrail (Optional, but recommended)
@@ -28,3 +29,6 @@ This a basic step by step how to deploy this app on a [Dokku instance](https://g
  - Go to [Papertrail](https://papertrailapp.com/) and add a new system
  - Configure the logspout logspout at /home/dokku/.logspout/OPTS
    With a new line: `export DOKKU_LOGSPOUT_SYSLOG_SERVER=syslog+tls://YOU-PAPERTRAIL-URL`
+11. Setup database backup service to Amazon Bucket (Optional, but *VERY* recommended)
+ - dokku postgres:backup-auth staging-db aws-access-key-id aws-secret-access-key
+ - dokku postgres:backup-schedule db "0 3 * * *" bucket-name

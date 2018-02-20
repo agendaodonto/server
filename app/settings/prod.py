@@ -21,3 +21,4 @@ DJOSER['DOMAIN'] = 'agendaodonto.com'
 # Celery Settings
 CELERY_BROKER_URL = os.getenv('RABBITMQ_URL', None)
 CELERY_BROKER_HEARTBEAT = None
+CELERY_DEFAULT_QUEUE = 'agendaodonto.production'
