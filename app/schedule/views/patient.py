@@ -1,10 +1,11 @@
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet, CharFilter
-from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-from app.schedule.models import Schedule
+from app.schedule.models import Schedule, Message
 from app.schedule.models.patient import Patient
+from app.schedule.serializers.message import MessageSerializer
 from app.schedule.serializers.patient import PatientSerializer, PatientListSerializer
 from app.schedule.serializers.schedule import ScheduleSerializer
 
@@ -25,7 +26,7 @@ class PatientFilter(FilterSet):
         fields = ['name', 'last_name', 'phone']
 
 
-class PatientList(generics.ListCreateAPIView):
+class PatientList(ListCreateAPIView):
     """
     Lista de pacientes
     """
@@ -45,7 +46,7 @@ class PatientList(generics.ListCreateAPIView):
         ).distinct()
 
 
-class PatientDetail(generics.RetrieveUpdateDestroyAPIView):
+class PatientDetail(RetrieveUpdateDestroyAPIView):
     """
     Detalhes do paciente
     """
@@ -64,7 +65,7 @@ class PatientDetail(generics.RetrieveUpdateDestroyAPIView):
         ).distinct()
 
 
-class PatientSchedule(generics.ListAPIView):
+class PatientSchedule(ListAPIView):
     """
     Agendamentos do paciente
     """
@@ -72,7 +73,6 @@ class PatientSchedule(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        print(self.kwargs)
         queryset = Schedule.objects.filter(
             Q(patient=self.kwargs['pk']),
             Q(patient__clinic__owner=self.request.user) |
@@ -81,3 +81,15 @@ class PatientSchedule(generics.ListAPIView):
         ).distinct()
 
         return queryset
+
+
+class PatientMessages(ListAPIView):
+    """
+    Mensagens enviadas/recevidas do pacientece
+    """
+    serializer_class = MessageSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    ordering = ('date', )
+
+    def get_queryset(self):
+        return Message.objects.filter(patient=self.kwargs['pk'])
