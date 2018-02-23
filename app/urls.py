@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url, include
 
 urlpatterns = [
@@ -21,3 +22,9 @@ urlpatterns = [
     # Login
     url(r'auth/', include('djoser.urls.authtoken')),
 ]
+
+# Support testing
+if settings.DEBUG:
+    urlpatterns.append(
+        url(r'reset/', include('app.testing.urls'))
+    )
