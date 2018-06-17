@@ -9,7 +9,7 @@ djangorestframework==3.6.4
 djoser==0.7.0
 djangorestframework-jwt==1.11.0
 gunicorn==19.8.1
-psycopg2==2.7.3.1
+psycopg2==2.7.5
 pytz==2018.3
 requests==2.18.4
 requests-mock==1.4.0
