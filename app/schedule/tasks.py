@@ -7,10 +7,9 @@ from app.schedule.libs.sms import DeviceNotFoundError
 @celery_app.task(bind=True)
 def send_message(self, to, message):
     messenger = settings.APP_MESSENGER_CLASS
-    user = settings.SMS_GATEWAY_USER
-    password = settings.SMS_GATEWAY_PASSWORD
+    token = settings.SMS_GATEWAY_TOKEN
     try:
-        messenger = messenger(user, password)
+        messenger = messenger(token)
         messenger.get_best_device()
         return messenger.send_message(to, message)
     except DeviceNotFoundError as e:

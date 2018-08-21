@@ -1,47 +1,13 @@
 {
-    "success": true,
-    "result": {
-        "total": 2,
-        "per_page": 500,
-        "current_page": 1,
-        "last_page": 1,
-        "from": 1,
-        "to": 2,
-        "data": [
-            {
-                "id": "1",
-                "name": "Device 1",
-                "make": "Samsung",
-                "model": "SM-G930F",
-                "number": "",
-                "provider": "CLARO",
-                "country": "",
-                "connection_type": "Unknown",
-                "battery": "20",
-                "signal": "100",
-                "wifi": "1",
-                "lat": "0",
-                "lng": "0",
-                "last_seen": 1500364238,
-                "created_at": false
-            },
-            {
-                "id": "2",
-                "name": "Device 2",
-                "make": "Samsung",
-                "model": "SM-G955F",
-                "number": "",
-                "provider": "TIM 19 | TIM",
-                "country": "br",
-                "connection_type": "Unknown",
-                "battery": "100",
-                "signal": "20",
-                "wifi": "1",
-                "lat": "0",
-                "lng": "0",
-                "last_seen": 1500364238,
-                "created_at": false
-            }
-        ]
+  "results": [
+    {
+      "attributes": {
+        "phone_number": "Unknown"
+      },
+      "id": 1,
+      "type": "android",
+      "name": "New Device"
     }
+  ],
+  "count": 1
 }
