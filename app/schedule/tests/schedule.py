@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pytz
 from celery import states
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django_celery_results.models import TaskResult
@@ -141,7 +142,7 @@ class ScheduleAPITest(APITestCase):
     def test_get_attendance(self):
         url = reverse('schedule-attendance')
 
-        now = datetime.now()
+        now = datetime.now(settings.TZ)
         relative_date = (now - relativedelta(months=1))
         date_format = relative_date.strftime('%Y-%m-01')
 

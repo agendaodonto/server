@@ -21,7 +21,6 @@ class Schedule(TimeStampedModel):
         (3, 'Cancelou'),
     )
     MAX_NOTI_ATTEMPTS = 10
-    tz = pytz.timezone(settings.TIME_ZONE)
 
     class Meta:
         verbose_name = 'Agendamento'
@@ -36,9 +35,9 @@ class Schedule(TimeStampedModel):
     status = IntegerField('Status do agendamento', choices=STATUS_CHOICES, default=0)
 
     def get_message(self) -> str:
-        local_date = self.date.astimezone(self.tz)
+        local_date = self.date.astimezone(settings.TZ)
 
-        now = datetime.now(tz=self.tz).date()
+        now = datetime.now(tz=settings.TZ).date()
 
         if (local_date.date() - now).days == 0:
             schedule_date = 'hoje'
