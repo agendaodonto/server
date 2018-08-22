@@ -389,29 +389,34 @@ class ScheduleNotificationTest(TestCase):
         expected = "Olá Sr. Luís, " \
                    "não se esqueça de sua consulta odontológica " \
                    "amanhã às {}.".format(self.schedule.date.strftime("%H:%M"))
-
         self.assertEqual(self.schedule.get_message(), expected)
 
     def test_send_sms(self):
         with Mocker() as m:
+            m.post(SMSGateway.BASE_ENDPOINT + 'device/search', text=self.get_response('devices'))
             m.post(SMSGateway.BASE_ENDPOINT + 'message/send', text=self.get_response('message_sent'))
             m.get(SMSGateway.BASE_ENDPOINT + 'message/1', text=self.get_response('message_received'))
 
+            self.sms.get_latest_device()
             self.assertTrue(self.sms.send_message('123456', 'test message'))
 
     def test_failed_sms(self):
         with Mocker() as m:
+            m.post(SMSGateway.BASE_ENDPOINT + 'device/search', text=self.get_response('devices'))
             m.post(SMSGateway.BASE_ENDPOINT + 'message/send', text=self.get_response('message_sent'))
             m.get(SMSGateway.BASE_ENDPOINT + 'message/1', text=self.get_response('message_failed'))
 
+            self.sms.get_latest_device()
             self.assertFalse(self.sms.send_message('123456', 'test message'))
 
     @override_settings(SMS_TIMEOUT=0.1)
     def test_stuck_sms(self):
         with Mocker() as m:
+            m.post(SMSGateway.BASE_ENDPOINT + 'device/search', text=self.get_response('devices'))
             m.post(SMSGateway.BASE_ENDPOINT + 'message/send', text=self.get_response('message_sent'))
             m.get(SMSGateway.BASE_ENDPOINT + 'message/1', text=self.get_response('message_pending'))
 
+            self.sms.get_latest_device()
             self.assertFalse(self.sms.send_message('123456', 'test message'))
 
     def test_no_device_available(self):
