@@ -10,7 +10,7 @@ def send_message(self, to, message):
     token = settings.SMS_GATEWAY_TOKEN
     try:
         messenger = messenger(token)
-        messenger.get_best_device()
+        messenger.get_latest_device()
         return messenger.send_message(to, message)
     except DeviceNotFoundError as e:
         self.retry(exc=e, max_retries=settings.CELERY_TASK_MAX_RETRY, countdown=60 * 5)
