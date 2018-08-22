@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import pytz
+
 from app.schedule.libs.sms import SMS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -223,3 +225,6 @@ SMS_TIMEOUT = 60 * 15
 SMS_MIN_BATTERY = 15
 SMS_MIN_SIGNAL = 10
 SMS_MIN_MISSING_TIME = 60 * 60 * 10
+
+# Global TZ Setting
+TZ = pytz.timezone(TIME_ZONE)
