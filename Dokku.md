@@ -14,8 +14,7 @@ This a basic step by step how to deploy this app on a [Dokku instance](https://g
 7. Configure environment variables `dokku --app backend-staging config:set [KEY]=[VALUE]`
  - DJANGO_SECRET_KEY (A new one can be generated with `tr -dc A-Za-z0-9 </dev/urandom | head -c 48`)
  - DJANGO_SETTINGS_MODULE (`app.settings.prod` or `app.settings.staging`)
- - [SMS_GATEWAY_USER](https://smsgateway.me/admin/users/login#signup)
- - [SMS_GATEWAY_PASSWORD](https://smsgateway.me/admin/users/login#signup)
+ - [SMS_GATEWAY_TOKEN](https://smsgateway.me/admin/users/login#signup)
  - EMAIL_HOST
  - EMAIL_HOST_PASSWORD
  - EMAIL_HOST_USER
