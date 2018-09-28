@@ -1,6 +1,5 @@
 import datetime
 
-from app.schedule.libs.sms import DummySMS
 from .default import *
 
 # Database
@@ -36,8 +35,6 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ),
 }
-
-APP_MESSENGER_CLASS = DummySMS
 
 CELERY_ALWAYS_EAGER = True
 CELERY_BROKER_URL = 'memory://localhost:8000//'

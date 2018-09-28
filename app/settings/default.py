@@ -15,8 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import pytz
 
-from app.schedule.libs.sms import SMS
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -199,9 +197,6 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
 }
 
-SMS_GATEWAY_TOKEN = os.getenv('SMS_GATEWAY_TOKEN')
-
-APP_MESSENGER_CLASS = SMS
 MESSAGE_ETA = {'hour': 10, 'minute': 0}
 MESSAGE_EXPIRES = {'hour': 22, 'minute': 30}
 
@@ -219,9 +214,6 @@ CELERY_DEFAULT_QUEUE = os.getenv('WORKER_QUEUE', 'default')
 
 # SMS Settings
 SMS_TIMEOUT = 60 * 15
-SMS_MIN_BATTERY = 15
-SMS_MIN_SIGNAL = 10
-SMS_MIN_MISSING_TIME = 60 * 60 * 10
 
 # Global TZ Setting
 TZ = pytz.timezone(TIME_ZONE)
