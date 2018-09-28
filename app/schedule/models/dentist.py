@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
+from django.db.models import CharField, BooleanField, EmailField
 
 
 class DentistManager(BaseUserManager):
@@ -62,15 +63,16 @@ class Dentist(AbstractBaseUser):
 
     objects = DentistManager()
 
-    first_name = models.CharField('Nome', max_length=50)
-    last_name = models.CharField('Sobrenome', max_length=50)
-    email = models.EmailField('Email', max_length=255, unique=True)
-    cro = models.CharField('CRO', max_length=15)
-    cro_state = models.CharField('Estado Emissor', max_length=2, choices=CRO_STATE_OPTIONS)
+    first_name = CharField('Nome', max_length=50)
+    last_name = CharField('Sobrenome', max_length=50)
+    email = EmailField('Email', max_length=255, unique=True)
+    cro = CharField('CRO', max_length=15)
+    cro_state = CharField('Estado Emissor', max_length=2, choices=CRO_STATE_OPTIONS)
     sex = models.CharField('Sexo', max_length=1, choices=SEX_TYPES)
-    is_active = models.BooleanField('Ativo', default=True)
-    is_admin = models.BooleanField('Admin', default=False)
-    is_superuser = models.BooleanField('Super Usuário', default=False)
+    is_active = BooleanField('Ativo', default=True)
+    is_admin = BooleanField('Admin', default=False)
+    is_superuser = BooleanField('Super Usuário', default=False)
+    device_token = CharField('Token do dispositivo', max_length=100, default=None, null=True)
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
