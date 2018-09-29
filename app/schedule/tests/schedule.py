@@ -1,5 +1,7 @@
 import json
+import unittest
 from datetime import datetime, timedelta
+from threading import Timer
 
 import pytz
 from celery import states
@@ -8,6 +10,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django_celery_results.models import TaskResult
+from pyfcm import FCMNotification
 from requests_mock import Mocker
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
@@ -16,11 +19,14 @@ from app.schedule.models import Schedule
 from app.schedule.models.clinic import Clinic
 from app.schedule.models.dentist import Dentist
 from app.schedule.models.patient import Patient
+from app.schedule.service.sms import SMS, SMSTimeoutError
 
 
 class ScheduleAPITest(APITestCase):
     def setUp(self):
         self.dentist = Dentist.objects.create_user('John', 'Snow', 'john@snow.com', 'M', '1234', 'SP', 'john')
+        self.dentist.device_token = 'BLAH'
+        self.dentist.save()
         self.extra_dentist = Dentist.objects.create_user('Maria', 'Dolores', 'maria@d.com', 'F', '5555', 'RJ', 'maria')
         self.clinic = Clinic.objects.create(
             name='Test Clinic',
@@ -336,6 +342,8 @@ class ScheduleAPITest(APITestCase):
 class ScheduleNotificationTest(TestCase):
     def setUp(self):
         self.dentist = Dentist.objects.create_user('John', 'Snow', 'john@snow.com', 'M', '1234', 'SP', 'john')
+        self.dentist.device_token = ''
+        self.dentist.save()
         self.clinic = Clinic.objects.create(
             name='Test Clinic',
             owner=self.dentist,
@@ -362,10 +370,6 @@ class ScheduleNotificationTest(TestCase):
             duration=60
         )
 
-    def get_response(self, file_name, **kwargs) -> bin:
-        with open('app/schedule/tests/sms_gateway_responses/{}.json'.format(file_name)) as file:
-            return file.read()
-
     def test_get_schedule_message_any_date(self):
         expected = "Olá Sr. Luís, " \
                    "não se esqueça de sua consulta odontológica " \
@@ -387,3 +391,51 @@ class ScheduleNotificationTest(TestCase):
                    "não se esqueça de sua consulta odontológica " \
                    "amanhã às {}.".format(self.schedule.date.strftime("%H:%M"))
         self.assertEqual(self.schedule.get_message(), expected)
+
+    @override_settings(SMS_TIMEOUT=1)
+    def test_sms_timeout_raises_exception(self):
+        with Mocker() as mock:
+            mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
+            client = SMS()
+            self.assertRaises(SMSTimeoutError, client.send_message, self.schedule)
+
+
+class ScheduleNotificationTransactionTest(unittest.TestCase):
+    @override_settings(SMS_TIMEOUT=10)
+    def test_sms_success_return_true(self):
+        dentist = Dentist.objects.create_user('John', 'Snow', 'john@snow.com', 'M', '1234', 'SP', 'john')
+        dentist.device_token = ''
+        dentist.save()
+        clinic = Clinic.objects.create(
+            name='Test Clinic',
+            owner=dentist,
+            message='',
+            time_delta=1.0
+        )
+        patient = Patient.objects.create(
+            name='Luís',
+            last_name='Cunha Martins',
+            phone='+5519993770437',
+            sex='M',
+            clinic=clinic
+        )
+        future_schedule = Schedule.objects.create(
+            patient=patient,
+            dentist=dentist,
+            date=datetime.now(settings.TZ) + timedelta(days=1),
+            duration=60
+        )
+        task = TaskResult.objects.create()
+        task.task_id = future_schedule.notification_task_id
+        task.save()
+
+        def async_update_schedule():
+            task.status = states.SUCCESS
+            task.result = True
+            task.save()
+
+        with Mocker() as mock:
+            mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
+            client = SMS()
+            Timer(5, async_update_schedule).start()
+            self.assertTrue(client.wait_for_status_change(future_schedule))
