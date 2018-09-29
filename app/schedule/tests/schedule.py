@@ -401,8 +401,9 @@ class ScheduleNotificationTest(TestCase):
 
 
 class ScheduleNotificationTransactionTest(unittest.TestCase):
+
     @override_settings(SMS_TIMEOUT=10)
-    def test_sms_success_return_true(self):
+    def test_sms_timeout_raises_exception(self):
         dentist = Dentist.objects.create_user('John', 'Snow', 'john@snow.com', 'M', '1234', 'SP', 'john')
         dentist.device_token = ''
         dentist.save()
