@@ -2,6 +2,7 @@ import json
 import unittest
 from datetime import datetime, timedelta
 from threading import Timer
+from time import sleep
 
 import pytz
 from celery import states
@@ -439,4 +440,5 @@ class ScheduleNotificationTransactionTest(unittest.TestCase):
             mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
             client = SMS()
             Timer(5, async_update_schedule).start()
+            sleep(10)
             # self.assertTrue(client.wait_for_status_change(future_schedule))
