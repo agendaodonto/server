@@ -8,6 +8,7 @@ from celery import states
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.test import TestCase, override_settings
 from django_celery_results.models import TaskResult
 from pyfcm import FCMNotification
@@ -434,6 +435,7 @@ class ScheduleNotificationTransactionTest(unittest.TestCase):
             task.status = states.SUCCESS
             task.result = True
             task.save()
+            connection.close()
 
         with Mocker() as mock:
             mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
