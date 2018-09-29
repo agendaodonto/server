@@ -438,5 +438,5 @@ class ScheduleNotificationTransactionTest(unittest.TestCase):
         with Mocker() as mock:
             mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
             client = SMS()
-            # Timer(5, async_update_schedule).start()
+            Timer(5, async_update_schedule).start()
             # self.assertTrue(client.wait_for_status_change(future_schedule))
