@@ -1,6 +1,5 @@
 import datetime
 
-from app.schedule.libs.sms import DummySMS
 from .default import *
 
 ALLOWED_HOSTS = ['*']
