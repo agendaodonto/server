@@ -15,6 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import pytz
 
+from app.schedule.service.sms import SMS
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -196,6 +198,10 @@ DJOSER = {
     'ACTIVATION_URL': 'cadastro/ativar/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
 }
+
+FIREBASE_TOKEN = os.getenv('FIREBASE_TOKEN')
+
+MESSAGE_CLASS = SMS
 
 MESSAGE_ETA = {'hour': 10, 'minute': 0}
 MESSAGE_EXPIRES = {'hour': 22, 'minute': 30}

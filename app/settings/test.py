@@ -1,18 +1,15 @@
 import datetime
 
+import dj_database_url
+
+from app.schedule.service.sms import FakeSMS
 from .default import *
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 ALLOWED_HOSTS = ['*']
-
-DATABASES = {
-    'default': {
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.sqlite3',
-    }
-}
+DATABASES = {'default': dj_database_url.config()}
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -40,3 +37,6 @@ CELERY_ALWAYS_EAGER = True
 CELERY_BROKER_URL = 'memory://localhost:8000//'
 CELERY_EAGER_PROPAGATE = True
 CELERY_TASK_MAX_RETRY = 1
+
+FIREBASE_TOKEN = 'A-FAKE-TOKEN'
+MESSAGE_CLASS = FakeSMS
