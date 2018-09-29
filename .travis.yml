@@ -9,8 +9,8 @@ jobs:
     - echo flake8
   - stage: test
     python: 3.6
-    services:
-      - postgresql
+    addons:
+      postgresql: "9.5"
     env:
       - DJANGO_SETTINGS_MODULE=app.settings.test
     script:
