@@ -64,9 +64,8 @@ class Schedule(TimeStampedModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if date.today() > self.date.date():
-            if not self.id:
-                self.notification_status = self.NOTIFICATION_STATUS_CHOICES[3][0]
+        if date.today() > self.date.date() and not self.id:
+            self.notification_status = self.NOTIFICATION_STATUS_CHOICES[3][0]
 
         return super().save(force_insert, force_update, using, update_fields)
 
@@ -84,4 +83,6 @@ class Schedule(TimeStampedModel):
         msg_expires = msg_datetime.replace(**end_time)
         message = send_message.apply_async((self,), eta=msg_datetime,
                                            expires=msg_expires)
-        return message.id
+        if self.notification_task_id:
+            self.revoke_notification()
+        self.notification_task_id = message.id

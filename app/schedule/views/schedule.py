@@ -100,3 +100,33 @@ class ScheduleAttendance(APIView):
             request_date = datetime.datetime.now()
 
         return Response(self.get_data(request.user, request_date))
+
+
+class ScheduleNotification(APIView):
+    def update_schedule_status(self, user, schedule_id: int, new_status: int):
+        schedule = Schedule.objects.filter(
+            dentist=user,
+            id=schedule_id
+        ).first()
+
+        if not schedule:
+            return False
+
+        schedule.notification_status = new_status
+        schedule.save()
+        if new_status == 0:
+            schedule.create_notification()
+        return True
+
+    def post(self, request, pk):
+        schedule_id = int(pk)
+        new_status = request.data.get('new_status', None)
+
+        if new_status is not None:
+            result = self.update_schedule_status(request.user, schedule_id, new_status)
+            if result:
+                return Response({'success': True}, status=200)
+            else:
+                return Response({'error': 'Unauthorized'}, status=403)
+        else:
+            return Response({'error': 'Bad request data'}, status=400)

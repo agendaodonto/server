@@ -19,6 +19,7 @@ class SMS:
             if schedule.notification_status != previous_status:
                 status_changed = True
             if (datetime.now() - start_time).total_seconds() >= timeout:
+                schedule.notification_status = 3
                 raise SMSTimeoutError('Tempo excedido')
             sleep(1)
 
