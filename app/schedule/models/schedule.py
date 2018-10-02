@@ -1,9 +1,7 @@
 from datetime import datetime, timedelta, date
 
-from celery import states
 from django.conf import settings
 from django.db.models import ForeignKey, DateTimeField, IntegerField, CharField
-from django_celery_results.models import TaskResult
 from model_utils.models import TimeStampedModel
 
 from app.schedule.celery import celery_app
@@ -19,7 +17,13 @@ class Schedule(TimeStampedModel):
         (2, 'Faltou'),
         (3, 'Cancelou'),
     )
-    MAX_NOTI_ATTEMPTS = 10
+    NOTIFICATION_STATUS_CHOICES = (
+        (0, 'Pending'),
+        (1, 'Success'),
+        (2, 'Error'),
+        (3, 'Expired'),
+        (4, 'Unknown')
+    )
 
     class Meta:
         verbose_name = 'Agendamento'
@@ -30,6 +34,7 @@ class Schedule(TimeStampedModel):
     dentist = ForeignKey(Dentist)
     date = DateTimeField('Data')
     duration = IntegerField('Duração')
+    notification_status = IntegerField('Status da notificação', default=0)
     notification_task_id = CharField('ID Notificação', max_length=50, default=None, null=True)
     status = IntegerField('Status do agendamento', choices=STATUS_CHOICES, default=0)
 
@@ -59,11 +64,9 @@ class Schedule(TimeStampedModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if self.date.date() > date.today():
-            if self.notification_task_id:
-                self.revoke_notification()
-
-            self.notification_task_id = self.create_notification()
+        if date.today() > self.date.date():
+            if not self.id:
+                self.notification_status = self.NOTIFICATION_STATUS_CHOICES[3][0]
 
         return super().save(force_insert, force_update, using, update_fields)
 
@@ -82,26 +85,3 @@ class Schedule(TimeStampedModel):
         message = send_message.apply_async((self,), eta=msg_datetime,
                                            expires=msg_expires)
         return message.id
-
-    @property
-    def notification_status(self):
-        try:
-            task = TaskResult.objects.get(task_id=self.notification_task_id)
-            if task.status == states.REVOKED:
-                return 'EXPIRADO'
-            elif task.status == states.RETRY:
-                return 'AGENDADO'
-            elif task.status == states.SUCCESS:
-                if task.result.upper() == 'TRUE':
-                    return 'ENVIADO'
-                elif task.result.upper() == 'FALSE':
-                    return 'FALHOU'
-                else:
-                    return 'DESCONHECIDO'
-            else:
-                return 'DESCONHECIDO'
-        except TaskResult.DoesNotExist:
-            if self.date.date() > date.today():
-                return 'AGENDADO'
-            else:
-                return 'EXPIRADO'
