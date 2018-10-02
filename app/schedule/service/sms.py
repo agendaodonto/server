@@ -4,7 +4,6 @@ from time import sleep
 from django.conf import settings
 from pyfcm import FCMNotification
 
-from app.schedule.models import Schedule
 
 
 class SMS:
@@ -28,6 +27,7 @@ class SMS:
         return True
 
     def send_message(self, schedule_id):
+        from app.schedule.models import Schedule
         schedule = Schedule.objects.get(pk=schedule_id)
         self.client.single_device_data_message(schedule.dentist.device_token, data_message={
             'sendTo': schedule.patient.phone,
