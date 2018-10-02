@@ -5,12 +5,13 @@ from app.schedule.views.clinic import ClinicDetail
 from app.schedule.views.clinic import ClinicList, ClinicPatients
 from app.schedule.views.dentist import DentistList, DentistDetail
 from app.schedule.views.patient import PatientList, PatientDetail, PatientSchedule
-from app.schedule.views.schedule import ScheduleList, ScheduleDetail, ScheduleAttendance
+from app.schedule.views.schedule import ScheduleList, ScheduleDetail, ScheduleAttendance, ScheduleNotification
 
 urlpatterns = [
     # Schedules
     url(r'^schedules/$', ScheduleList.as_view(), name='schedules'),
     url(r'^schedules/(?P<pk>[0-9]+)/$', ScheduleDetail.as_view(), name='schedule-detail'),
+    url(r'^schedules/(?P<pk>[0-9]+)/notification/$', ScheduleNotification.as_view(), name='schedule-notification'),
     url(r'^schedules/attendance/$', ScheduleAttendance.as_view(), name='schedule-attendance'),
 
     # Patients

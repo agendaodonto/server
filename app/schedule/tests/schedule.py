@@ -269,7 +269,7 @@ class ScheduleAPITest(APITestCase):
             'duration': 50
         }
 
-        response = json.loads(self.client.put(url, body).content.decode('utf-8'))
+        response = json.loads(self.client.patch(url, body).content.decode('utf-8'))
         self.assertNotEqual(response['notification_status'], 1)
         self.assertEqual(previous_task_id, Schedule.objects.get(pk=self.schedule.pk).notification_task_id)
 
@@ -284,6 +284,56 @@ class ScheduleAPITest(APITestCase):
 
         response = json.loads(self.client.post(url, body).content.decode('utf-8'))
         self.assertEqual(response['notification_status'], 3)
+
+    def test_update_notification_from_schedule_not_owned_returns_403(self):
+        self.schedule.dentist = self.extra_dentist
+        self.schedule.save()
+        url = reverse('schedule-notification', kwargs={'pk': self.schedule.pk})
+        body = {
+            'new_status': 1
+        }
+        response = self.client.post(url, body)
+        response_data = json.loads(response.content.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response_data.get('error', False))
+
+    def test_update_notification_wrong_body_returns_400(self):
+        url = reverse('schedule-notification', kwargs={'pk': self.schedule.pk})
+        body = {
+            'newStatus': 1
+        }
+        response = self.client.post(url, body)
+        response_data = json.loads(response.content.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(response_data.get('error', False))
+
+    def test_update_notification_returns_200(self):
+        url = reverse('schedule-notification', kwargs={'pk': self.schedule.pk})
+        body = {
+            'new_status': 1
+        }
+        response = self.client.post(url, body)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.schedule.refresh_from_db()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response_data.get('error', False))
+        self.assertEqual(self.schedule.notification_status, 1)
+
+    def test_update_notification_to_pending_sends_new_notification(self):
+        url = reverse('schedule-notification', kwargs={'pk': self.schedule.pk})
+        body = {
+            'new_status': 0
+        }
+        response = self.client.post(url, body)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.schedule.refresh_from_db()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response_data.get('error', False))
+        self.assertEqual(self.schedule.notification_status, 0)
 
 
 class ScheduleNotificationTest(TestCase):
@@ -349,7 +399,7 @@ class ScheduleNotificationTest(TestCase):
 
 class ScheduleNotificationTransactionTest(unittest.TestCase):
 
-    @override_settings(SMS_TIMEOUT=10)
+    @override_settings(SMS_TIMEOUT=5)
     def test_sms_successful_updates_status(self):
         dentist = Dentist.objects.create_user('John', 'Snow', 'john@snow.com', 'M', '1234', 'SP', 'john')
         dentist.device_token = ''
@@ -382,5 +432,5 @@ class ScheduleNotificationTransactionTest(unittest.TestCase):
         with Mocker() as mock:
             mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
             client = SMS()
-            Timer(1, async_update_schedule).start()
+            Timer(0.1, async_update_schedule).start()
             self.assertTrue(client.wait_for_status_change(future_schedule))
