@@ -81,7 +81,7 @@ class Schedule(TimeStampedModel):
         end_time = settings.MESSAGE_EXPIRES
         msg_datetime = self.date.replace(**start_time) - timedelta(days=1)
         msg_expires = msg_datetime.replace(**end_time)
-        message = send_message.apply_async((self,), eta=msg_datetime,
+        message = send_message.apply_async((self.id,), eta=msg_datetime,
                                            expires=msg_expires)
         if self.notification_task_id:
             self.revoke_notification()
