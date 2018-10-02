@@ -72,7 +72,7 @@ class Dentist(AbstractBaseUser):
     is_active = BooleanField('Ativo', default=True)
     is_admin = BooleanField('Admin', default=False)
     is_superuser = BooleanField('Super Usuário', default=False)
-    device_token = CharField('Token do dispositivo', max_length=100, default=None, null=True)
+    device_token = CharField('Token do dispositivo', max_length=255, default=None, null=True)
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
