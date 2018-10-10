@@ -8,6 +8,7 @@ from app.schedule.celery import celery_app
 from app.schedule.models.dentist import Dentist
 from app.schedule.models.patient import Patient
 from app.schedule.tasks import send_message
+from app.settings.default import TZ
 
 
 class Schedule(TimeStampedModel):
@@ -79,7 +80,7 @@ class Schedule(TimeStampedModel):
     def create_notification(self):
         start_time = settings.MESSAGE_ETA
         end_time = settings.MESSAGE_EXPIRES
-        msg_datetime = self.date.replace(**start_time) - timedelta(days=1)
+        msg_datetime = self.date.astimezone(TZ).replace(**start_time) - timedelta(days=1)
         msg_expires = msg_datetime.replace(**end_time)
         message = send_message.apply_async((self.id,), eta=msg_datetime,
                                            expires=msg_expires)
