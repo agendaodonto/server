@@ -19,9 +19,11 @@ class SMS:
         while not status_changed:
             if schedule.notification_status != previous_status:
                 status_changed = True
+                print('FINALLYYY !! STATUS HAS BEEN CHANGED!')
             if (datetime.now() - start_time).total_seconds() >= timeout:
                 schedule.notification_status = 3
                 raise SMSTimeoutError('Tempo excedido')
+            print('WAITING!!!')
             sleep(1)
 
         return True
@@ -34,7 +36,7 @@ class SMS:
             'content': schedule.get_message(),
             'scheduleId': schedule.id
         })
-
+        print('AHHHH WORKING!!!')
         return self.wait_for_status_change(schedule)
 
 
