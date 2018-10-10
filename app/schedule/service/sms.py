@@ -17,6 +17,7 @@ class SMS:
         status_changed = False
 
         while not status_changed:
+            schedule.refresh_from_db()
             if schedule.notification_status != previous_status:
                 status_changed = True
                 print('FINALLYYY !! STATUS HAS BEEN CHANGED!')
