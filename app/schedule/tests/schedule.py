@@ -391,6 +391,8 @@ class ScheduleNotificationTest(TestCase):
 
     @override_settings(SMS_TIMEOUT=1)
     def test_sms_timeout_raises_exception(self):
+        self.schedule.notification_status = 0
+        self.schedule.save()
         with Mocker() as mock:
             mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
             client = SMS()

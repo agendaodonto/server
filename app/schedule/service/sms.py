@@ -12,12 +12,11 @@ class SMS:
     def wait_for_status_change(self, schedule) -> bool:
         start_time = datetime.now()
         timeout = settings.SMS_TIMEOUT
-        previous_status = schedule.notification_status
         status_changed = False
 
         while not status_changed:
             schedule.refresh_from_db()
-            if schedule.notification_status != previous_status:
+            if schedule.notification_status != 0:
                 status_changed = True
             if (datetime.now() - start_time).total_seconds() >= timeout:
                 schedule.notification_status = 3

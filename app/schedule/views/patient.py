@@ -72,7 +72,6 @@ class PatientSchedule(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        print(self.kwargs)
         queryset = Schedule.objects.filter(
             Q(patient=self.kwargs['pk']),
             Q(patient__clinic__owner=self.request.user) |
