@@ -17,5 +17,5 @@ six==1.11.0
 whitenoise==4.1
 celery==4.2.1
 django-celery-results==1.0.1
-python-dateutil==2.7.3
+python-dateutil==2.7.4
 pyfcm==1.4.5
