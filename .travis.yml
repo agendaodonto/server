@@ -34,7 +34,7 @@ before_install:
 - openssl aes-256-cbc -k "$SECRET" -in .travis/deploy.key.enc -out .travis/deploy.key
   -d
  # set up awscli packages
-- pip install --user awscli
+- pip install awscli
 - mkdir -p build-data
 - aws s3 sync s3:///agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER ./build-data --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
 
