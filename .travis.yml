@@ -21,7 +21,7 @@ jobs:
       - coverage xml
       - coveralls
       - mv coverage.xml ./build-data
-      - aws s3 sync ./dist s3://agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+      - aws s3 sync ./build-data s3://agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
   - stage: Quality Gate
     name: Sonar
     script:
