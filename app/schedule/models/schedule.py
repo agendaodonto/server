@@ -63,31 +63,24 @@ class Schedule(TimeStampedModel):
 
         return message
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-
-        if date.today() > self.date.date():
-            self.notification_status = self.NOTIFICATION_STATUS_CHOICES[3][0]
-        elif not self.id:
-            self.create_notification()
-
-        return super().save(force_insert, force_update, using, update_fields)
-
     def delete(self, using=None, keep_parents=False):
-        celery_app.control.revoke(self.notification_task_id)
+        self.revoke_notification()
         return super().delete(using, keep_parents)
 
     def revoke_notification(self):
         celery_app.control.revoke(self.notification_task_id)
 
     def create_notification(self):
-        start_time = settings.MESSAGE_ETA
-        end_time = settings.MESSAGE_EXPIRES
-        msg_datetime = self.date.astimezone(TZ).replace(**start_time) - timedelta(days=1)
-        msg_expires = msg_datetime.replace(**end_time)
-        message = send_message.apply_async((self.id,), eta=msg_datetime,
-                                           expires=msg_expires)
-        if self.notification_task_id:
-            self.revoke_notification()
-        self.notification_task_id = message.id
-        self.notification_status = self.NOTIFICATION_STATUS_CHOICES[0][0]
+        if date.today() > self.date.date():
+            self.notification_status = self.NOTIFICATION_STATUS_CHOICES[3][0]
+        else:
+            start_time = settings.MESSAGE_ETA
+            end_time = settings.MESSAGE_EXPIRES
+            msg_datetime = self.date.astimezone(TZ).replace(**start_time) - timedelta(days=1)
+            msg_expires = msg_datetime.replace(**end_time)
+            message = send_message.apply_async((self.id,), eta=msg_datetime,
+                                               expires=msg_expires)
+            if self.notification_task_id:
+                self.revoke_notification()
+            self.notification_task_id = message.id
+            self.notification_status = self.NOTIFICATION_STATUS_CHOICES[0][0]
