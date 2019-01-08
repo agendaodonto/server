@@ -1,5 +1,13 @@
 language: python
 dist: trusty
+
+before_install:
+  # set up awscli packages
+  - pip install --user awscli
+  - mkdir -p build-data
+  - aws s3 sync s3:///agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER ./build-data --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+
+
 jobs:
   include:
   - stage: test
@@ -18,9 +26,12 @@ jobs:
     script:
       - pip install -r requirements-test.txt
       - coverage run ./manage.py test
+      - coverage xml
       - coveralls
-  - stage: test
-    name: Quality Gate
+      - mv coverage.xml ./build-data
+      - aws s3 sync ./dist s3://agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+  - stage: Quality Gate
+    name: Sonar
     script:
       - sonar-scanner
   - stage: deploy
