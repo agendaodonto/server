@@ -1,13 +1,5 @@
 language: python
 dist: trusty
-
-before_install:
-  # set up awscli packages
-  - pip install --user awscli
-  - mkdir -p build-data
-  - aws s3 sync s3:///agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER ./build-data --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
-
-
 jobs:
   include:
   - stage: test
@@ -41,6 +33,11 @@ jobs:
 before_install:
 - openssl aes-256-cbc -k "$SECRET" -in .travis/deploy.key.enc -out .travis/deploy.key
   -d
+ # set up awscli packages
+- pip install --user awscli
+- mkdir -p build-data
+- aws s3 sync s3:///agendaodonto-server-ci/$TRAVIS_BUILD_NUMBER ./build-data --expires "$(date -d '+1 hour' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+
 env:
   global:
   - secure: Wut/hSzxL/fA58X3GBA7cyTh9Iy7s9urMneRMK/2/L8y/QCmTWJQgPSnt9h60ErGtJwEGB9/G/3QuxdaKdlcxLbORADJDYWpI6ZFUE7rp1yTRc2piiYEaeYbZ8q0QQtsR341aXqDTDjT2XiclmXJbtr8GYUVQ9IS1/FW1dEyyBt4sYqOsLl/Y3GQD9WFJnAx0oZ9QF7/WREzFEHGdfRtrz8lRJAMwqCOFxbYBZYewbX+vPfXgpybEp2nrY+iyvoHK3IWU9uiUUtUxhNqRLdq6v/HOzYngnu02CD8XSmQVaVw+DiCdE9loLePs+FcTnXO1XNGrr3hL5nQ5D9kuHtfT6l6F21ebobs4iAodL+Kitp3uKE1Q+gDtiPhPxDvFZ3DREAHvTZu611gYS46DVO1TM2FuhLT8xfUdc0zLmrdFl+ksiOsxFk1S/y6XbmrB3DjwWipkHKaVQcwxgRiInFQ5hNKu0Wsvr6E8DvBv2HcJAjtUyS4Dv69hbSJvemgvsA4iEmPyjE+sXorN9GLxiYcabVsxdMWP+f2OZGMg8dMVgrcDda1uyifCsErBM9cztKKNnpXpje+SDyeKZgvELQ7cIxDcsNbTCy71/mL3iBBHK6sxknaQKuOT+OWmkZ6K7c0ecgo0BILSPxE6MMeZhVUOigHj5vEvnEpvJXk7+gSt3s=
