@@ -114,9 +114,6 @@ class ScheduleNotification(APIView):
 
         schedule.notification_status = new_status
         schedule.save()
-        if new_status == 0:
-            schedule.create_notification()
-            schedule.save()
         return True
 
     def post(self, request, pk):
