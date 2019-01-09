@@ -18,7 +18,7 @@ from app.schedule.models import Schedule
 from app.schedule.models.clinic import Clinic
 from app.schedule.models.dentist import Dentist
 from app.schedule.models.patient import Patient
-from app.schedule.service.sms import SMS, SMSTimeoutError
+from app.schedule.service.sms import SMS
 
 
 class ScheduleAPITest(APITestCase):
@@ -233,19 +233,19 @@ class ScheduleAPITest(APITestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response_data[0]['notification_status'], 0)
 
-    # def test_should_create_notification_future_schedule_update(self):
-    #     url = reverse('schedule-detail', kwargs={"pk": self.schedule.pk})
-    #     prev_task_id = self.schedule.notification_task_id
-    #     body = {
-    #         'patient': self.patient.id,
-    #         'dentist': self.dentist.id,
-    #         'date': datetime.now(tz=pytz.timezone('America/Sao_Paulo')) + timedelta(days=1),
-    #         'duration': 50
-    #     }
-    #
-    #     response = json.loads(self.client.put(url, body).content.decode('utf-8'))
-    #     self.assertEqual(response['notification_status'], 0)
-    #     self.assertNotEquals(prev_task_id, Schedule.objects.get(pk=self.schedule.pk).notification_task_id)
+    def test_should_create_notification_future_schedule_update(self):
+        url = reverse('schedule-detail', kwargs={"pk": self.schedule.pk})
+        prev_task_id = self.schedule.notification_task_id
+        body = {
+            'patient': self.patient.id,
+            'dentist': self.dentist.id,
+            'date': datetime.now(tz=pytz.timezone('America/Sao_Paulo')) + timedelta(days=1),
+            'duration': 50
+        }
+
+        response = json.loads(self.client.put(url, body).content.decode('utf-8'))
+        self.assertEqual(response['notification_status'], 0)
+        self.assertNotEquals(prev_task_id, Schedule.objects.get(pk=self.schedule.pk).notification_task_id)
 
     def test_should_create_notification_future_schedule_creation(self):
         url = reverse('schedules')
@@ -400,15 +400,11 @@ class ScheduleNotificationTest(TestCase):
 
     @override_settings(SMS_TIMEOUT=1)
     def test_sms_timeout_raises_exception(self):
-        self.future_schedule.notification_status = 0
-        self.future_schedule.save()
-        self.future_schedule.refresh_from_db()
         with Mocker() as mock:
-            mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}')
+            mock.post(FCMNotification.FCM_END_POINT, text='{"key": "value"}', status_code=400)
             client = SMS()
-            self.assertRaises(SMSTimeoutError, client.send_message, self.future_schedule.id)
+            self.assertFalse(client.send_message(self.future_schedule.id))
             self.future_schedule.refresh_from_db()
-            self.assertEqual(self.future_schedule.notification_status, 3)
 
 
 class ScheduleNotificationTransactionTest(unittest.TestCase):
