@@ -19,5 +19,6 @@ urlpatterns = [
     # API
     url(r'^v1/', include('app.schedule.urls')),
     # Login
+    url(r'auth/', include('djoser.urls')),
     url(r'auth/', include('djoser.urls.authtoken')),
 ]
