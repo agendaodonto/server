@@ -15,7 +15,7 @@ requests==2.21.0
 requests-mock==1.5.2
 six==1.11.0
 whitenoise==3.3.1
-celery==4.2.1
+celery==4.2.2
 django-celery-results==1.0.1
 python-dateutil==2.7.5
 pyfcm==1.4.5
