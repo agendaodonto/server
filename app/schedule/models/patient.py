@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models.fields.related import ForeignKey
 from model_utils.models import TimeStampedModel
 
+from app.schedule.models.dental_plan import DentalPlan
 from app.schedule.models.clinic import Clinic
 
 
@@ -25,3 +27,4 @@ class Patient(TimeStampedModel):
     phone = models.CharField('Telefone', max_length=14)
     sex = models.CharField('Sexo', max_length=1, choices=SEX_TYPES)
     clinic = models.ForeignKey(Clinic)
+    dental_plan = ForeignKey(DentalPlan, default=None, null=True, blank=True)
