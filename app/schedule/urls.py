@@ -3,6 +3,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from app.schedule.views.clinic import ClinicDetail
 from app.schedule.views.clinic import ClinicList, ClinicPatients
+from app.schedule.views.dental_plan import DentalPlanList, DentalPlanDetail
 from app.schedule.views.dentist import DentistList, DentistDetail
 from app.schedule.views.patient import PatientList, PatientDetail, PatientSchedule
 from app.schedule.views.schedule import ScheduleList, ScheduleDetail, ScheduleAttendance, ScheduleNotification
@@ -27,5 +28,9 @@ urlpatterns = [
     url(r'^clinics/$', ClinicList.as_view(), name='clinics'),
     url(r'^clinics/(?P<pk>[0-9]+)/$', ClinicDetail.as_view(), name='clinic-detail'),
     url(r'^clinics/(?P<pk>[0-9]+)/patients/$', ClinicPatients.as_view(), name='clinic-patients'),
+
+    # Dental Plans
+    url(r'^dental-plans/$', DentalPlanList.as_view(), name='dental-plans'),
+    url(r'^dental-plans/(?P<pk>[0-9]+)$', DentalPlanDetail.as_view(), name='dental-plan-detail'),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: ./dependencies/Dockerfile-worker
     environment:
-    - DJANGO_SETTINGS_MODULE=app.settings.dev
+    - DJANGO_SETTINGS_MODULE=apsp.settings.staging
     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-    - DATABASE_URL=postgres://postgres:postgres@db:5432/dev-db
+    - DATABASE_URL=postgres://postgres:postgres@db:5432/ao-dev
     env_file:
     - env.list
     depends_on:
@@ -19,13 +19,13 @@ services:
       context: .
       dockerfile: ./dependencies/Dockerfile-app
     environment:
-    - DJANGO_SETTINGS_MODULE=app.settings.dev
+    - DJANGO_SETTINGS_MODULE=app.settings.staging
     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-    - DATABASE_URL=postgres://postgres:postgres@db:5432/dev-db
+    - DATABASE_URL=postgres://postgres:postgres@db:5432/ao-dev
     env_file:
     - env.list
     ports:
-    - 8000:8000
+    - 8001:8000
     depends_on:
     - db
     - rabbitmq
