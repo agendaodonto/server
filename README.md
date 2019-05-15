@@ -1,7 +1,7 @@
 # AgendaOdonto Backend Service
 
-[![Build Status](https://travis-ci.org/agendaodonto/server.svg?branch=master)](https://travis-ci.org/agendaodonto/server)
-[![Coverage Status](https://coveralls.io/repos/github/agendaodonto/server/badge.svg?branch=develop)](https://coveralls.io/github/agendaodonto/server?branch=add-travis)
+[![Build Status](https://travis-ci.org/agendaodonto/server.svg?branch=develop)](https://travis-ci.org/agendaodonto/server)
+[![Coverage Status](https://coveralls.io/repos/github/agendaodonto/server/badge.svg?branch=develop)](https://coveralls.io/github/agendaodonto/server?branch=develop)
 [![Updates](https://pyup.io/repos/github/agendaodonto/server/shield.svg)](https://pyup.io/repos/github/agendaodonto/server/)
 [![Python 3](https://pyup.io/repos/github/agendaodonto/server/python-3-shield.svg)](https://pyup.io/repos/github/agendaodonto/server/)
 
