@@ -29,9 +29,10 @@ class SMS:
     def send_message(self, schedule_id):
         from app.schedule.models import Schedule
         schedule = Schedule.objects.get(pk=schedule_id)
+        phone = f'+55{schedule.patient.phone}'
         try:
             self.client.single_device_data_message(schedule.dentist.device_token, data_message={
-                'sendTo': schedule.patient.phone,
+                'sendTo': phone,
                 'content': schedule.get_message(),
                 'scheduleId': schedule.id
             })
