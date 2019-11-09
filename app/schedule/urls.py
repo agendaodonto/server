@@ -31,6 +31,6 @@ urlpatterns = [
 
     # Dental Plans
     url(r'^dental-plans/$', DentalPlanList.as_view(), name='dental-plans'),
-    url(r'^dental-plans/(?P<pk>[0-9]+)$', DentalPlanDetail.as_view(), name='dental-plan-detail'),
+    url(r'^dental-plans/(?P<pk>[0-9]+)/$', DentalPlanDetail.as_view(), name='dental-plan-detail'),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
