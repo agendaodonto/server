@@ -1,5 +1,5 @@
 from django.db.models import Q
-from django_filters.rest_framework import FilterSet, CharFilter
+from django_filters.rest_framework import FilterSet, CharFilter, DateTimeFromToRangeFilter
 from rest_framework import generics
 from rest_framework import permissions
 
@@ -14,6 +14,7 @@ class PatientFilter(FilterSet):
     last_name = CharFilter(name='last_name', lookup_expr='icontains')
     phone = CharFilter(name='phone', lookup_expr='icontains')
     full_name = CharFilter(name='full_name', method='search_by_full_name')
+    created = DateTimeFromToRangeFilter()
 
     def search_by_full_name(self, qs, name, value):
         for term in value.split():
@@ -22,7 +23,7 @@ class PatientFilter(FilterSet):
 
     class Meta:
         model = Patient
-        fields = ['name', 'last_name', 'phone']
+        fields = ['name', 'last_name', 'phone', 'created']
 
 
 class PatientList(generics.ListCreateAPIView):
