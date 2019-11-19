@@ -82,19 +82,20 @@ class DentalPlanAPITest(APITestCase):
         # Creates schedules for the range filtered
         for _ in range(20):
             Schedule.objects.create(patient=self.patient_1,
-                                    date=datetime(2019, 10, 5, tzinfo=pytz.timezone('America/Sao_Paulo')),
+                                    date=datetime(2019, 10, 5, 10, 1, tzinfo=pytz.timezone('America/Sao_Paulo')),
                                     duration=1,
                                     dentist=self.dentist)
 
         for _ in range(5):
             Schedule.objects.create(patient=self.patient_2,
-                                    date=datetime(2019, 10, 10, tzinfo=pytz.timezone('America/Sao_Paulo')),
+                                    date=datetime(2019, 10, 15, 20, 15, tzinfo=pytz.timezone('America/Sao_Paulo')),
                                     duration=1,
                                     dentist=self.dentist)
+
         # Creates schedules outside the filtered range
         for _ in range(20):
             Schedule.objects.create(patient=self.patient_1,
-                                    date=datetime(2019, 9, 5, tzinfo=pytz.timezone('America/Sao_Paulo')),
+                                    date=datetime(2019, 9, 5, 7, 1, tzinfo=pytz.timezone('America/Sao_Paulo')),
                                     duration=1,
                                     dentist=self.dentist)
 
