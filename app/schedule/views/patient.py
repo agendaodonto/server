@@ -17,7 +17,7 @@ class PatientFilter(FilterSet):
 
     def search_by_full_name(self, qs, name, value):
         for term in value.split():
-            qs = qs.filter(Q(name__icontains=term) | Q(last_name__icontains=term))
+            qs = qs.filter(Q(name__unaccent__icontains=term) | Q(last_name__unaccent__icontains=term))
         return qs
 
     class Meta:
