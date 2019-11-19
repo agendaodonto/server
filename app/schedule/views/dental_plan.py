@@ -49,7 +49,7 @@ class DentalPlanStats(APIView):
 
     def get_stats(self, dentist, start_date: datetime, end_date: datetime):
         return Schedule.objects.filter(dentist=dentist) \
-            .filter(date__gt=start_date, date__lte=end_date) \
+            .filter(date__date__range=(start_date, end_date)) \
             .values('patient__dental_plan__name') \
             .annotate(count=Count('*')) \
             .annotate(dental_plan=F('patient__dental_plan__name')) \
