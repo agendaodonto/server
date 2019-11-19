@@ -32,12 +32,15 @@ ADMINS = [('André Roggeri Campos', 'a.roggeri.c@gmail.com')]
 # Application definition
 
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
+    # 3rd Party apps
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
