@@ -8,11 +8,11 @@ fi
 eval "$(ssh-agent -s)" #start the ssh agent
 chmod 600 .travis/deploy.key # this key should have push access
 ssh-add .travis/deploy.key
-ssh-keyscan deploy.agendaodonto.com  >> ~/.ssh/known_hosts
+ssh-keyscan 104.131.19.64  >> ~/.ssh/known_hosts
 git config --global push.default simple
 
 if [[ $TRAVIS_BRANCH == "master" ]]; then
-  git remote add deploy dokku@deploy.agendaodonto.com:backend
+  git remote add deploy dokku@104.131.19.64:backend
   git push deploy master:master --force
   echo "Deploying to Production"
 else
@@ -20,7 +20,7 @@ else
 fi
 
 if [[ $TRAVIS_BRANCH == "develop" ]]; then
-  git remote add deploy dokku@deploy.agendaodonto.com:backend-staging
+  git remote add deploy dokku@104.131.19.64:backend-staging
   git push deploy develop:master --force
   echo "Deploying to Staging"
 else
