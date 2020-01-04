@@ -10,6 +10,8 @@ ALLOWED_HOSTS = [
     'backend.agendaodonto.com'
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True # This is temporarily due to domain migration
+
 DATABASES = {'default': dj_database_url.config()}
 
 CORS_ORIGIN_WHITELIST = (
