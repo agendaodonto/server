@@ -6,6 +6,7 @@ DEBUG = False
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', None)
 
 ALLOWED_HOSTS = [
+    '*', # This is temporarily due to domain migration
     'backend.agendaodonto.com'
 ]
 
