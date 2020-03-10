@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date
 
 from django.conf import settings
-from django.db.models import ForeignKey, DateTimeField, IntegerField, CharField
+from django.db.models import ForeignKey, DateTimeField, IntegerField, CharField, CASCADE
 from model_utils.models import TimeStampedModel
 
 from app.schedule.celery import celery_app
@@ -31,8 +31,8 @@ class Schedule(TimeStampedModel):
         verbose_name_plural = 'Agendamentos'
 
     # Model Fields
-    patient = ForeignKey(Patient)
-    dentist = ForeignKey(Dentist)
+    patient = ForeignKey(Patient, on_delete=CASCADE)
+    dentist = ForeignKey(Dentist, on_delete=CASCADE)
     date = DateTimeField('Data')
     duration = IntegerField('Duração')
     notification_status = IntegerField('Status da notificação', default=0)

@@ -6,9 +6,9 @@ from threading import Timer
 import pytz
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import connection
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from pyfcm import FCMNotification
 from requests_mock import Mocker
 from rest_framework.authtoken.models import Token

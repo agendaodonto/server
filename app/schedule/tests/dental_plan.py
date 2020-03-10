@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.parse import urlencode
 
 import pytz
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.test import APITestCase

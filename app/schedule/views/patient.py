@@ -10,10 +10,10 @@ from app.schedule.serializers.schedule import ScheduleSerializer
 
 
 class PatientFilter(FilterSet):
-    name = CharFilter(name='name', lookup_expr='icontains')
-    last_name = CharFilter(name='last_name', lookup_expr='icontains')
-    phone = CharFilter(name='phone', lookup_expr='icontains')
-    full_name = CharFilter(name='full_name', method='search_by_full_name')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    last_name = CharFilter(field_name='last_name', lookup_expr='icontains')
+    phone = CharFilter(field_name='phone', lookup_expr='icontains')
+    full_name = CharFilter(field_name='full_name', method='search_by_full_name')
 
     def search_by_full_name(self, qs, name, value):
         for term in value.split():
