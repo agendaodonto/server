@@ -1,8 +1,8 @@
 import datetime
 
-import django_filters
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
+from django_filters import DateFromToRangeFilter
 from django_filters.rest_framework import FilterSet
 from rest_framework import permissions
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
@@ -15,7 +15,7 @@ from app.schedule.serializers import ScheduleListSerializer, ScheduleSerializer
 
 
 class ScheduleFilter(FilterSet):
-    date = django_filters.DateFromToRangeFilter(name='date')
+    date = DateFromToRangeFilter(field_name='date')
 
     class Meta:
         model = Schedule

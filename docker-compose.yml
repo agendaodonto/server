@@ -6,22 +6,25 @@ services:
       context: .
       dockerfile: ./dependencies/Dockerfile-worker
     environment:
-    - DJANGO_SETTINGS_MODULE=apsp.settings.staging
+    - DJANGO_SETTINGS_MODULE=app.settings.dev
     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     - DATABASE_URL=postgres://postgres:postgres@db:5432/ao-dev
+    - DJANGO_SECRET_KEY=SOME_KEY
     env_file:
     - env.list
     depends_on:
     - db
     - rabbitmq
+
   web:
     build:
       context: .
       dockerfile: ./dependencies/Dockerfile-app
     environment:
-    - DJANGO_SETTINGS_MODULE=app.settings.staging
+    - DJANGO_SETTINGS_MODULE=app.settings.dev
     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     - DATABASE_URL=postgres://postgres:postgres@db:5432/ao-dev
+    - DJANGO_SECRET_KEY=SOME_KEY
     env_file:
     - env.list
     ports:
@@ -41,6 +44,14 @@ services:
     ports:
     - 5432:5432
 
+  admin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
   rabbitmq:
     image: rabbitmq:3-management
     ports:

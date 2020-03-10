@@ -14,7 +14,7 @@ from app.schedule.serializers.dental_plan import DentalPlanSerializer
 
 
 class DentalPlanFilter(FilterSet):
-    name = CharFilter(name='name', lookup_expr='icontains')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
 
     class Meta:
         model = DentalPlan
