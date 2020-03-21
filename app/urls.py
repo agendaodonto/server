@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     # API
-    url(r'^v2/', include('app.schedule.urls')),
+    url(r'^v3/', include('app.schedule.urls')),
     # Login
     url(r'auth/', include('djoser.urls')),
     url(r'auth/', include('djoser.urls.authtoken')),
