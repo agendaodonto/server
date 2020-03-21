@@ -10,4 +10,7 @@ COPY . .
 
 ENV PYTHONPATH "${PYTHONPATH}:/app/pip-packages"
 ENV PATH "${PATH}:/app/pip-packages/bin"
-CMD ["celery", "-A", "app.schedule", "worker"]
+
+COPY ./dependencies/app/docker-entrypoint.sh /app/docker-entrypoint.sh
+
+CMD ["./docker-entrypoint.sh"]

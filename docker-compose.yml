@@ -19,7 +19,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./dependencies/Dockerfile-app
+      dockerfile: dependencies/app/Dockerfile
     environment:
     - DJANGO_SETTINGS_MODULE=app.settings.dev
     - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -52,8 +52,8 @@ services:
       - PGADMIN_LISTEN_PORT=5050
     ports:
       - "5050:5050"
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
     - 8080:15672
-
