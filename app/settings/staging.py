@@ -10,6 +10,13 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 DJOSER['DOMAIN'] = 'agendaodontoweb-staging.firebaseapp.com'
 
+DJOSER = {
+    'DOMAIN': 'staging.agendaodonto.com',
+    'SITE_NAME': 'Agenda Odonto',
+    # 'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'cadastro/ativar/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+}
 
 # Celery Settings
 CELERY_BROKER_URL = os.environ['RABBITMQ_URL']
