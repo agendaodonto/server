@@ -69,7 +69,7 @@ class ScheduleAPITest(APITestCase):
         self.assertEqual(200, response.status_code)
 
     def test_filter_schedule(self):
-        url = reverse('schedules') + '?date_0=10/5/2016&date_1=11/5/2016'
+        url = reverse('schedules') + '?date_after=10/5/2016&date_before=11/5/2016'
         Schedule.objects.create(
             patient=self.patient,
             dentist=self.dentist,
