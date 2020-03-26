@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_celery_results',
     'django_filters',
+    'drf_yasg',
     # User Apps
     'app.schedule',
 ]
@@ -225,3 +226,13 @@ SMS_TIMEOUT = 60 * 15
 
 # Global TZ Setting
 TZ = pytz.timezone(TIME_ZONE)
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
