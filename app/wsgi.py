@@ -7,10 +7,15 @@ For more information on this file, see
 https://docs.djangoproject.com/en/1.9/howto/deployment/wsgi/
 """
 
-import os
 
-from django.core.wsgi import get_wsgi_application
+def load():
+    import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
+    from django.core.wsgi import get_wsgi_application
 
-application = get_wsgi_application()
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
+
+    return get_wsgi_application()
+
+
+application = load()
