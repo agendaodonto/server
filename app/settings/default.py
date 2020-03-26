@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     # User Apps
     'app.schedule',
+    'app.finance',
 ]
 
 MIDDLEWARE = [
