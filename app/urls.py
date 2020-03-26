@@ -31,6 +31,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     # API
     url(r'^v1/', include('app.schedule.urls')),
+    url(r'^v1/finance/', include('app.finance.urls')),
     # Login
     url(r'auth/', include('djoser.urls')),
     url(r'auth/', include('djoser.urls.authtoken')),
