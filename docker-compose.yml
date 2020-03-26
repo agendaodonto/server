@@ -32,7 +32,9 @@ services:
     depends_on:
     - db
     - rabbitmq
-
+    volumes:
+      - ./app:/app/app
+    restart: always
   db:
     build:
       context: ./dependencies
