@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 
 from app.finance.models import TransactionType
 from app.finance.serializers.transaction_type import TransactionTypeSerializer
+from app.finance.tests.utils.data import create_type
 from app.schedule.models import Dentist, Clinic
 
 
@@ -26,7 +27,7 @@ class TransactionTypeListAPITest(APITestCase):
     def test_should_get_transaction_types(self):
         # Arrange
         url = reverse('transaction-types')
-        avail_transaction = TransactionType.objects.create(code=1234, clinic=self.clinic, label='Some label here')
+        avail_transaction = create_type(self.clinic)
 
         # Act
         req = self.client.get(url)
@@ -87,8 +88,8 @@ class TransactionTypeListAPITest(APITestCase):
         clinic2.save()
 
         url = reverse('transaction-types')
-        avail_transaction1 = TransactionType.objects.create(code=1234, clinic=self.clinic, label='Some label here')
-        avail_transaction2 = TransactionType.objects.create(code=5555, clinic=clinic2, label='Some other here')
+        avail_transaction1 = create_type(self.clinic)
+        avail_transaction2 = create_type(clinic2)
 
         # Act
         req = self.client.get(url)

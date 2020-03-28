@@ -2,7 +2,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from app.finance.models import TransactionType
-from app.finance.serializers.transaction_type import TransactionTypeSerializer
+from app.finance.serializers import TransactionTypeSerializer
 
 
 class TransactionTypeList(ListCreateAPIView):

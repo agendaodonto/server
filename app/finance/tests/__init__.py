@@ -1,1 +1,4 @@
-from .transaction_type import TransactionTypeAPITest
+from .inflow_transaction_detail import InflowTransactionDetailAPITest
+from .inflow_transaction_list import InflowTransactionListAPITest
+from .transaction_type_detail import TransactionTypeDetailAPITest
+from .transaction_type_list import TransactionTypeListAPITest
