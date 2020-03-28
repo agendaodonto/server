@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 
 from app.finance.models import TransactionType
 from app.finance.serializers.transaction_type import TransactionTypeSerializer
+from app.finance.tests.utils.data import create_type
 from app.schedule.models import Dentist, Clinic
 
 
@@ -25,7 +26,7 @@ class TransactionTypeDetailAPITest(APITestCase):
 
     def test_should_update_transaction_type(self):
         # Arrange
-        avail_transaction = TransactionType.objects.create(code=1234, clinic=self.clinic, label='Some label here')
+        avail_transaction = create_type(self.clinic)
         url = reverse('transaction-type-detail', kwargs={'pk': avail_transaction.id})
         clinic2 = Clinic.objects.create(
             name='Test Clinic2',
@@ -50,7 +51,7 @@ class TransactionTypeDetailAPITest(APITestCase):
 
     def test_should_delete_transaction_type(self):
         # Arrange
-        avail_transaction = TransactionType.objects.create(code=1234, clinic=self.clinic, label='Some label here')
+        avail_transaction = create_type(self.clinic)
         url = reverse('transaction-type-detail', kwargs={'pk': avail_transaction.id})
 
         # Act
