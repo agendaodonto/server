@@ -15,7 +15,7 @@ psycopg2-binary==2.8.4
 pytz==2019.3
 requests==2.22.0
 six==1.12.0
-whitenoise==5.0.1
+whitenoise==5.1.0
 celery==4.2.1
 python-dateutil==2.8.0
 pyfcm==1.4.7
