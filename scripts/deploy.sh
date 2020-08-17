@@ -5,7 +5,7 @@ if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
   exit 1;
 fi
 
-eval "$(ssh-agent -s)" #start the ssh agent
+eval "$(ssh-agent -s)" # Start the ssh agent
 chmod 600 .travis/deploy.key # this key should have push access
 ssh-add .travis/deploy.key
 ssh-keyscan deploy.agendaodonto.com  >> ~/.ssh/known_hosts
@@ -20,7 +20,7 @@ else
 fi
 
 if [[ $TRAVIS_BRANCH == "develop" ]]; then
-  git remote add deploy dokku@deploy.agendaodonto.com:backend-staging-fix
+  git remote add deploy dokku@deploy.agendaodonto.com:backend-staging
   git push deploy develop:master --force
   echo "Deploying to Staging"
 else
