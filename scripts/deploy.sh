@@ -20,7 +20,7 @@ else
 fi
 
 if [[ $TRAVIS_BRANCH == "develop" ]]; then
-  git remote add deploy dokku@deploy.agendaodonto.com:backend-staging
+  git remote add deploy dokku@deploy.agendaodonto.com:backend-staging-fix
   git push deploy develop:master --force
   echo "Deploying to Staging"
 else
