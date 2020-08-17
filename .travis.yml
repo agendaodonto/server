@@ -1,5 +1,5 @@
 language: python
-dist: trusty
+dist: bionic
 jobs:
   include:
   - stage: test
@@ -8,7 +8,7 @@ jobs:
     - echo flake8
   - stage: test
     name: Test
-    python: 3.6
+    python: 3.8
     services:
       - postgresql
     addons:
@@ -33,9 +33,9 @@ jobs:
     if: type = push
     script:
       - scripts/deploy.sh
+
 before_install:
-- openssl aes-256-cbc -k "$SECRET" -in .travis/deploy.key.enc -out .travis/deploy.key
-  -d
+- openssl aes-256-cbc -md md5 -d -k "$SECRET" -in .travis/deploy.key.enc -out .travis/deploy.key
  # set up awscli packages
 - pip install awscli
 - mkdir -p build-data
