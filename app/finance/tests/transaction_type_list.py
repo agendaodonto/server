@@ -26,7 +26,7 @@ class TransactionTypeListAPITest(APITestCase):
 
     def test_should_get_transaction_types(self):
         # Arrange
-        url = reverse('transaction-types')
+        url = reverse('transaction-types', kwargs={'clinic_id': self.clinic.id})
         avail_transaction = create_type(self.clinic)
 
         # Act
@@ -39,12 +39,11 @@ class TransactionTypeListAPITest(APITestCase):
 
     def test_should_create_transaction_type(self):
         # Arrange
-        url = reverse('transaction-types')
+        url = reverse('transaction-types', kwargs={'clinic_id': self.clinic.id})
 
         # Act
         content = {
             'code': 1234,
-            'clinic': self.clinic.id,
             'label': 'Some !!! Label1234'
         }
         req = self.client.post(url, content)
@@ -57,12 +56,11 @@ class TransactionTypeListAPITest(APITestCase):
 
     def test_should_ensure_code_is_unique(self):
         # Arrange
-        url = reverse('transaction-types')
+        url = reverse('transaction-types', kwargs={'clinic_id': self.clinic.id})
 
         # Act
         content = {
             'code': 1234,
-            'clinic': self.clinic.id,
             'label': 'Some !!! Label1234'
         }
         first_req = self.client.post(url, content)
@@ -75,7 +73,7 @@ class TransactionTypeListAPITest(APITestCase):
         self.assertEqual(transaction_types.count(), 1)
         self.assertEqual(self.serializer.to_representation(transaction_types[0]), content)
 
-    def test_should_only_return_transactions_type_for_clinics_owned_by_user(self):
+    def test_should_not_allow_access_to_transaction_types_from_non_owned_clinic(self):
         # Arrange
         other_dentist = Dentist.objects.create_user('John', 'Snow', 'aria@stark.com', 'F', '5599', 'SP', 'john')
         clinic2 = Clinic.objects.create(
@@ -87,15 +85,11 @@ class TransactionTypeListAPITest(APITestCase):
         clinic2.owner = other_dentist
         clinic2.save()
 
-        url = reverse('transaction-types')
-        avail_transaction1 = create_type(self.clinic)
-        avail_transaction2 = create_type(clinic2)
+        url = reverse('transaction-types', kwargs={'clinic_id': clinic2.id})
+        create_type(clinic2)
 
         # Act
         req = self.client.get(url)
 
         # Assert
-        content = req.json()
-        self.assertEqual(req.status_code, 200)
-        self.assertEquals(content, [self.serializer.to_representation(avail_transaction1)])
-        self.assertNotContains(req, avail_transaction2.label)
+        self.assertEqual(req.status_code, 404)

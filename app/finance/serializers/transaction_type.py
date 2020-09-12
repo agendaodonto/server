@@ -6,5 +6,4 @@ from app.finance.models import TransactionType
 class TransactionTypeSerializer(ModelSerializer):
     class Meta:
         model = TransactionType
-        fields = ('label', 'code', 'clinic')
-
+        fields = ('label', 'code')
