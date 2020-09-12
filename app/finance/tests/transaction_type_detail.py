@@ -26,33 +26,33 @@ class TransactionTypeDetailAPITest(APITestCase):
 
     def test_should_update_transaction_type(self):
         # Arrange
-        avail_transaction = create_type(self.clinic)
-        url = reverse('transaction-type-detail', kwargs={'pk': avail_transaction.id})
         clinic2 = Clinic.objects.create(
             name='Test Clinic2',
             owner=self.dentist,
             message='',
             time_delta=0
         )
+        avail_transaction = create_type(clinic2)
+        url = reverse('transaction-type-detail', kwargs={'clinic_id': clinic2.id, 'pk': avail_transaction.id})
 
         # Act
         content = {
             'code': 5599,
-            'clinic': clinic2.id,
             'label': 'Some !!! Label1234'
         }
         req = self.client.put(url, content)
 
         # Assert
-        transaction_types = TransactionType.objects.all()
+        transaction_types = TransactionType.objects.filter(clinic=clinic2).all()
         self.assertEqual(req.status_code, 200)
         self.assertEqual(transaction_types.count(), 1)
         self.assertEqual(content, self.serializer.to_representation(transaction_types[0]))
+        self.assertEqual(transaction_types[0].clinic, clinic2)
 
     def test_should_delete_transaction_type(self):
         # Arrange
         avail_transaction = create_type(self.clinic)
-        url = reverse('transaction-type-detail', kwargs={'pk': avail_transaction.id})
+        url = reverse('transaction-type-detail', kwargs={'clinic_id': self.clinic.id, 'pk': avail_transaction.id})
 
         # Act
         req = self.client.delete(url)
