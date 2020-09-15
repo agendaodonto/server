@@ -44,9 +44,11 @@ class TransactionTypeDetailAPITest(APITestCase):
 
         # Assert
         transaction_types = TransactionType.objects.filter(clinic=clinic2).all()
+        retrieved_content = self.serializer.to_representation(transaction_types[0])
+        retrieved_content.pop('id')
         self.assertEqual(req.status_code, 200)
         self.assertEqual(transaction_types.count(), 1)
-        self.assertEqual(content, self.serializer.to_representation(transaction_types[0]))
+        self.assertEqual(content, retrieved_content)
         self.assertEqual(transaction_types[0].clinic, clinic2)
 
     def test_should_delete_transaction_type(self):
