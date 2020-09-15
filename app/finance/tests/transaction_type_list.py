@@ -50,9 +50,11 @@ class TransactionTypeListAPITest(APITestCase):
 
         # Assert
         transaction_types = TransactionType.objects.all()
+        retrieved_content = self.serializer.to_representation(transaction_types[0])
+        retrieved_content.pop('id')
         self.assertEqual(req.status_code, 201)
         self.assertEqual(transaction_types.count(), 1)
-        self.assertEqual(self.serializer.to_representation(transaction_types[0]), content)
+        self.assertEqual(retrieved_content, content)
 
     def test_should_ensure_code_is_unique(self):
         # Arrange
@@ -68,10 +70,12 @@ class TransactionTypeListAPITest(APITestCase):
 
         # Assert
         transaction_types = TransactionType.objects.all()
+        retrieved_content = self.serializer.to_representation(transaction_types[0])
+        retrieved_content.pop('id')
         self.assertEqual(first_req.status_code, 201)
         self.assertEqual(second_req.status_code, 400)
         self.assertEqual(transaction_types.count(), 1)
-        self.assertEqual(self.serializer.to_representation(transaction_types[0]), content)
+        self.assertEqual(retrieved_content, content)
 
     def test_should_not_allow_access_to_transaction_types_from_non_owned_clinic(self):
         # Arrange
