@@ -8,10 +8,10 @@ urlpatterns = [
         name='transaction-types'),
     url(r'^transaction-types/(?P<clinic_id>\d+)/(?P<pk>\d+)/$', TransactionTypeDetail.as_view(),
         name='transaction-type-detail'),
-    url('^inflows/(?P<clinic_id>\\d+)/$', InflowTransactionList.as_view(),
-        name='inflow-transactions'),
-    url('^inflows/(?P<clinic_id>\\d+)/(?P<pk>[0-9]+)/$', InflowTransactionDetail.as_view(),
-        name='inflow-transaction-detail'),
+    url('^transactions/(?P<clinic_id>\\d+)/$', InflowTransactionList.as_view(),
+        name='transactions'),
+    url('^transactions/(?P<clinic_id>\\d+)/(?P<pk>[0-9]+)/$', InflowTransactionDetail.as_view(),
+        name='transaction-detail'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

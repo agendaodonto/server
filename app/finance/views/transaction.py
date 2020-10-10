@@ -1,8 +1,8 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
-from app.finance.models import InflowTransaction
-from app.finance.serializers import InflowTransactionSerializer
+from app.finance.models import Transaction
+from app.finance.serializers import TransactionSerializer
 from app.schedule.models import Clinic
 
 
@@ -10,11 +10,11 @@ class InflowTransactionList(ListCreateAPIView):
     """
     Lista as transações de uma Clinica
     """
-    serializer_class = InflowTransactionSerializer
+    serializer_class = TransactionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return InflowTransaction.objects \
+        return Transaction.objects \
             .filter(clinic__owner=self.request.user) \
             .filter(clinic=self.kwargs.get('clinic_id'))
 
@@ -36,11 +36,11 @@ class InflowTransactionDetail(RetrieveUpdateDestroyAPIView):
     """
     Recupera/Apaga/Altera Transações de entrada (Crédito)
     """
-    serializer_class = InflowTransactionSerializer
+    serializer_class = TransactionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return InflowTransaction.objects \
+        return Transaction.objects \
             .filter(clinic__owner=self.request.user) \
             .filter(clinic=self.kwargs.get('clinic_id'))
 
