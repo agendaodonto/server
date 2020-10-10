@@ -3,7 +3,7 @@ from faker import Faker
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from app.finance.serializers import InflowTransactionSerializer
+from app.finance.serializers import TransactionSerializer
 from app.finance.tests.utils.data import create_inflow_transaction_model, create_inflow_transaction
 from app.schedule.tests.utils.data import create_clinic, create_dentist
 
@@ -13,7 +13,7 @@ class InflowTransactionListAPITest(APITestCase):
         self.dentist = create_dentist()
         self.clinic = create_clinic(self.dentist)
         self.authenticate()
-        self.serializer = InflowTransactionSerializer()
+        self.serializer = TransactionSerializer()
         self.faker = Faker('pt_BR')
 
     def authenticate(self):
@@ -25,7 +25,7 @@ class InflowTransactionListAPITest(APITestCase):
         other_clinic = create_clinic(self.dentist)
         avail_transaction = create_inflow_transaction_model(self.clinic)
         create_inflow_transaction_model(other_clinic)
-        url = reverse('inflow-transactions', kwargs={'clinic_id': self.clinic.id})
+        url = reverse('transactions', kwargs={'clinic_id': self.clinic.id})
 
         # Act
         req = self.client.get(url)
@@ -37,7 +37,7 @@ class InflowTransactionListAPITest(APITestCase):
 
     def test_should_create_inflow_transaction(self):
         # Arrange
-        url = reverse('inflow-transactions', kwargs={'clinic_id': self.clinic.id})
+        url = reverse('transactions', kwargs={'clinic_id': self.clinic.id})
         body = create_inflow_transaction(self.clinic)
         body['clinic'] = body['clinic'].id
         body['type'] = body['type'].id
@@ -47,6 +47,7 @@ class InflowTransactionListAPITest(APITestCase):
 
         # Assert
         content = req.json()
+        content.pop('id')
         expected_response = body.copy()
         del expected_response['clinic']
         self.assertEqual(req.status_code, 201)
@@ -56,7 +57,7 @@ class InflowTransactionListAPITest(APITestCase):
         # Arrange
         other_dentist = create_dentist()
         other_clinic = create_clinic(other_dentist)
-        url = reverse('inflow-transactions', kwargs={'clinic_id': other_clinic.id})
+        url = reverse('transactions', kwargs={'clinic_id': other_clinic.id})
 
         # Act
         req = self.client.get(url)
@@ -68,7 +69,7 @@ class InflowTransactionListAPITest(APITestCase):
         # Arrange
         other_dentist = create_dentist()
         other_clinic = create_clinic(other_dentist)
-        url = reverse('inflow-transactions', kwargs={'clinic_id': other_clinic.id})
+        url = reverse('transactions', kwargs={'clinic_id': other_clinic.id})
         body = create_inflow_transaction(self.clinic)
         body['clinic'] = body['clinic'].id
         body['type'] = body['type'].id

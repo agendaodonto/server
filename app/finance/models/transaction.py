@@ -5,10 +5,10 @@ from app.finance.models import TransactionType
 from app.schedule.models import Clinic
 
 
-class InflowTransaction(TimeStampedModel):
+class Transaction(TimeStampedModel):
     clinic = ForeignKey(Clinic, on_delete=PROTECT)
     amount = DecimalField(max_digits=8, decimal_places=2)
-    payment_holder = CharField('Titular do Pagamento', max_length=25)
+    payment_holder = CharField('Titular do Pagamento', blank=True, max_length=25)
     service_beneficiary = CharField('Beneficiário do Serviço', blank=True, max_length=25)
     description = CharField('Descrição', max_length=255)
     date = DateField('Data')

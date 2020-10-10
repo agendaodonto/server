@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from faker import Faker
 
-from app.finance.models import InflowTransaction, TransactionType
+from app.finance.models import Transaction, TransactionType
 from app.schedule.models import Clinic
 
 faker = Faker('pt_BR')
@@ -22,8 +22,8 @@ def create_inflow_transaction(clinic: Clinic) -> dict:
     }
 
 
-def create_inflow_transaction_model(clinic: Clinic) -> InflowTransaction:
-    return InflowTransaction.objects.create(**create_inflow_transaction(clinic))
+def create_inflow_transaction_model(clinic: Clinic) -> Transaction:
+    return Transaction.objects.create(**create_inflow_transaction(clinic))
 
 
 def create_type(clinic: Clinic) -> TransactionType:
