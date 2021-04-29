@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: django
+    versions:
+    - 3.1.5
+    - 3.1.6
+    - 3.1.7
+  - dependency-name: coverage
+    versions:
+    - "5.4"
+  - dependency-name: pytz
+    versions:
+    - "2020.5"
+  - dependency-name: requests-mock
+    versions:
+    - 1.8.0
