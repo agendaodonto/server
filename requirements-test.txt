@@ -1,4 +1,4 @@
 coverage==4.5.4
-requests-mock==1.7.0
+requests-mock==1.9.3
 faker==4.1.2
 coveralls==2.1.2
